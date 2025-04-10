@@ -31,7 +31,7 @@ const Edit = () => {
 
   return (
     <div className="container p-5 vw-100 vh-100 bg-light">
-      <h1 className="m-2">User {id}</h1>
+      <h1 className="m-2">Student ID: {id}</h1>
       <Link to="/" className="btn btn-success m-2">
         Back
       </Link>

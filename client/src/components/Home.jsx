@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Carousel from "./Carousel";
 
 function Home() {
   const [data, setData] = useState([]);
@@ -27,7 +28,8 @@ function Home() {
       .catch((err) => console.log(err));
   }
   return (
-    <div className="container bg-light p-5 vh-100 vw-100">
+    <div className="container-fluid mt-5 p-0 bg-transparent">
+      <Carousel />
       <h3>Students</h3>
       <div className="d-flex justify-content-end mb-3">
         <Link className="btn btn-success" to="/create">

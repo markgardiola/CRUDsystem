@@ -2,6 +2,7 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 const path = require('path');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -15,7 +16,7 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   pass: '',
-  database: 'students',
+  database: 'users',
 })
 
 app.post("/add_user", (req, res) => {
@@ -26,6 +27,42 @@ app.post("/add_user", (req, res) => {
     if (err)
       return res.json({ message: "Something unexpected has occured" + err });
     return res.json({ success: "Student added successfully" });
+  });
+});
+
+// register user
+
+app.post('/register_user', (req, res) => {
+  const sql = 'INSERT INTO user_details (`username`,`email`,`password`) VALUES (?, ?, ?)';
+  const saltRounds = 10;
+  bcrypt.hash(req.body.password, saltRounds, (err, hash) => {
+    if (err) return res.json({ message: "Error hashing password" });
+    const values = [req.body.username, req.body.email, hash];
+    db.query(sql, values, (err, result) => {
+      if (err) return res.json({ message: "Something unexpected has occured" + err });
+      return res.json({ success: "User registered successfully" });
+    });
+  });
+})
+
+// login user
+
+app.post('/validate_user', (req, res) => {
+  const sql = 'SELECT * FROM user_details WHERE `email` = ?';
+  const email = req.body.email;
+  const password = req.body.password;
+
+  db.query(sql, [email], (err, result) => {
+    if (err) return res.json({ message: "Server error" });
+    if (result.length === 0) return res.json({ message: "User not found" });
+
+    const hashedPassword = result[0].password;
+    bcrypt.compare(password, hashedPassword, (err, isMatch) => {
+      if (err) return res.json({ message: "Error comparing passwords" });
+      if (!isMatch) return res.json({ message: "Invalid credentials" });
+
+      return res.json({ success: "Login successful", user: result[0] });
+    });
   });
 });
 

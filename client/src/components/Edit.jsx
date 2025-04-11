@@ -30,16 +30,21 @@ const Edit = () => {
   }
 
   return (
-    <div className="container p-5 vw-100 vh-100 bg-light">
-      <h1 className="m-2">Student ID: {id}</h1>
-      <Link to="/" className="btn btn-success m-2">
+    <div className="container-fluid p-5 vw-100 vh-100 bg-light d-flex flex-column align-items-center">
+      <h1 className="mb-4">Edit Student Details</h1>
+      <Link to="/" className="btn btn-success mb-4">
         Back
       </Link>
       {data.map((student) => {
         return (
-          <form onSubmit={handleSubmit} className="m-2 w-50">
-            <div className="form-group my-3">
-              <label htmlFor="name">Name</label>
+          <form
+            onSubmit={handleSubmit}
+            className="w-25 w-md-50 bg-white p-4 rounded shadow-sm"
+          >
+            <div className="form-group mb-3">
+              <label htmlFor="name" className="form-label">
+                Name
+              </label>
               <input
                 className="form-control"
                 value={student.name}
@@ -51,8 +56,10 @@ const Edit = () => {
                 }
               />
             </div>
-            <div className="form-group my-3">
-              <label htmlFor="email">Email</label>
+            <div className="form-group mb-3">
+              <label htmlFor="email" className="form-label">
+                Email
+              </label>
               <input
                 className="form-control"
                 value={student.email}
@@ -64,11 +71,14 @@ const Edit = () => {
                 }
               />
             </div>
-            <div className="form-group my-3">
-              <label htmlFor="gender">Gender</label>
+            <div className="form-group mb-3">
+              <label htmlFor="gender" className="form-label">
+                Gender
+              </label>
               <select
-                className="form-control w-25"
+                className="form-control"
                 name="gender"
+                value={student.gender}
                 required
                 onChange={(e) =>
                   setData([{ ...data[0], gender: e.target.value }])
@@ -79,8 +89,10 @@ const Edit = () => {
                 <option value="Female">Female</option>
               </select>
             </div>
-            <div className="form-group my-3">
-              <label htmlFor="age">Age</label>
+            <div className="form-group mb-3">
+              <label htmlFor="age" className="form-label">
+                Age
+              </label>
               <input
                 className="form-control"
                 value={student.age}
@@ -90,8 +102,8 @@ const Edit = () => {
                 onChange={(e) => setData([{ ...data[0], age: e.target.value }])}
               />
             </div>
-            <div className="form-group my-3">
-              <button type="submit" className="btn btn-success">
+            <div className="form-group text-center">
+              <button type="submit" className="btn btn-success w-50">
                 Save
               </button>
             </div>

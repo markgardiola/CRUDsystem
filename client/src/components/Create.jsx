@@ -25,72 +25,81 @@ const Create = () => {
       .catch((err) => console.log(err));
   }
   return (
-    <div className="container p-5 vh-100 vw-100 bg-light">
-      <div className="row">
-        <h3>Add Student</h3>
-        <div className="d-flex justify-content-end">
-          <Link to="/" className="btn btn-success">
-            Home
-          </Link>
+    <div className="container-fluid py-5 vh-100 bg-light">
+      <div className="row justify-content-center">
+        <div className="col-lg-6 col-md-8 col-sm-10">
+          <h3 className="text-center mb-4">Add Student</h3>
+          <div className="d-flex justify-content-end mb-3">
+            <Link to="/" className="btn btn-success">
+              Home
+            </Link>
+          </div>
+          <form
+            onSubmit={handleSubmit}
+            className="p-4 border rounded bg-white shadow-sm"
+          >
+            <div className="form-group mb-3">
+              <label className="fw-bold" htmlFor="name">
+                Name
+              </label>
+              <input
+                className="form-control"
+                type="text"
+                name="name"
+                required
+                onChange={(e) => setValues({ ...values, name: e.target.value })}
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label className="fw-bold" htmlFor="email">
+                Email
+              </label>
+              <input
+                className="form-control"
+                type="email"
+                name="email"
+                required
+                onChange={(e) =>
+                  setValues({ ...values, email: e.target.value })
+                }
+              />
+            </div>
+            <div className="form-group mb-3">
+              <label className="fw-bold" htmlFor="gender">
+                Gender
+              </label>
+              <select
+                className="form-control"
+                name="gender"
+                required
+                onChange={(e) =>
+                  setValues({ ...values, gender: e.target.value })
+                }
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div className="form-group mb-3">
+              <label className="fw-bold" htmlFor="age">
+                Age
+              </label>
+              <input
+                className="form-control"
+                type="number"
+                name="age"
+                required
+                onChange={(e) => setValues({ ...values, age: e.target.value })}
+              />
+            </div>
+            <div className="form-group text-center">
+              <button type="submit" className="btn btn-success w-100">
+                Save
+              </button>
+            </div>
+          </form>
         </div>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group d-flex justify-content-center my-3">
-            <label className="me-3 fw-bold" htmlFor="name">
-              Name
-            </label>
-            <input
-              className="form-control w-25"
-              type="text"
-              name="name"
-              required
-              onChange={(e) => setValues({ ...values, name: e.target.value })}
-            />
-          </div>
-          <div className="form-group d-flex justify-content-center my-3">
-            <label className="me-3 fw-bold" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="form-control w-25"
-              type="email"
-              name="email"
-              required
-              onChange={(e) => setValues({ ...values, email: e.target.value })}
-            />
-          </div>
-          <div className="form-group d-flex justify-content-center my-3">
-            <label className="me-3 fw-bold" htmlFor="gender">
-              Gender
-            </label>
-            <select
-              className="form-control w-25"
-              name="gender"
-              required
-              onChange={(e) => setValues({ ...values, gender: e.target.value })}
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
-          <div className="form-group d-flex justify-content-center my-3">
-            <label className="me-3 fw-bold" htmlFor="age">
-              Age
-            </label>
-            <input
-              className="form-control w-25"
-              type="number"
-              name="age"
-              required
-              onChange={(e) => setValues({ ...values, age: e.target.value })}
-            />
-          </div>
-          <div className="form-group d-flex justify-content-center my-3">
-            <button type="submit" className="btn btn-success">
-              Save
-            </button>
-          </div>
-        </form>
       </div>
     </div>
   );

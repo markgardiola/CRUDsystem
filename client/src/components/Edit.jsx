@@ -30,9 +30,9 @@ const Edit = () => {
   }
 
   return (
-    <div className="container-fluid p-5 vw-100 vh-100 bg-light d-flex flex-column align-items-center">
-      <h1 className="mb-4">Edit Student Details</h1>
-      <Link to="/" className="btn btn-success mb-4">
+    <div className="container-fluid p-5 mt-5 vw-100 vh-100 bg-light d-flex flex-column align-items-center">
+      <h1 className="m-4">Edit Student Details</h1>
+      <Link to="/" className="btn btn-success mb-3">
         Back
       </Link>
       {data.map((student) => {

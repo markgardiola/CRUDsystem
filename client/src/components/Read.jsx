@@ -14,11 +14,11 @@ const Read = () => {
       .catch((err) => console.log(err));
   }, [id]);
   return (
-    <div className="container-fluid p-5 vw-100 vh-100 bg-light">
+    <div className="container-fluid p-5 vh-100 bg-light">
       <div className="row justify-content-center">
-        <div className="col-md-8">
-          <h1 className="m-4 text-center">Student Details</h1>
-          <Link to="/" className="btn btn-success mb-4">
+        <div className="col-md-8 d-flex flex-column align-items-center">
+          <h1 className="mt-5">Student Details</h1>
+          <Link to="/" className="btn btn-success mb-3">
             Back
           </Link>
           {data.map((student) => {

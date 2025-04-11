@@ -34,63 +34,59 @@ const SignUp = () => {
   };
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center vh-100 vw-100">
-      <div className="row">
-        <div className="col">
-          <form
-            onSubmit={handleSubmit}
-            className="form-control p-5 rounded-3 shadow"
-          >
-            <h1 className="text-center">Sign Up</h1>
-            <div>
-              <label htmlFor="username" className="mt-3">
-                Username
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter your username"
-                required
-                name="username"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="mt-3">
-                Email
-              </label>
-              <input
-                type="email"
-                className="form-control"
-                placeholder="Enter your email"
-                required
-                name="email"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="mt-3">
-                Password
-              </label>
-              <input
-                type="password"
-                className="form-control"
-                placeholder="Enter your password"
-                required
-                name="password"
-                onChange={handleChange}
-              />
-            </div>
-            <div className="d-flex flex-column justify-content-center mt-4">
-              <button className="btn btn-primary">Sign Up</button>
-              <p className="mt-3 text-center">already have an account?</p>
-              <Link to="/signIn" className="nav-link text-primary text-center">
-                Sign In
-              </Link>
-            </div>
-          </form>
+    <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
+      <form
+        onSubmit={handleSubmit}
+        className="form-control p-5 rounded-3 shadow w-25"
+      >
+        <h1 className="text-center">Sign Up</h1>
+        <div>
+          <label htmlFor="username" className="mt-3">
+            Username
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter your username"
+            required
+            name="username"
+            onChange={handleChange}
+          />
         </div>
-      </div>
+        <div>
+          <label htmlFor="email" className="mt-3">
+            Email
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            placeholder="Enter your email"
+            required
+            name="email"
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className="mt-3">
+            Password
+          </label>
+          <input
+            type="password"
+            className="form-control"
+            placeholder="Enter your password"
+            required
+            name="password"
+            onChange={handleChange}
+          />
+        </div>
+        <div className="d-flex flex-column justify-content-center mt-4">
+          <button className="btn btn-primary">Sign Up</button>
+          <p className="mt-3 text-center">already have an account?</p>
+          <Link to="/signIn" className="nav-link text-primary text-center">
+            Sign In
+          </Link>
+        </div>
+      </form>
     </div>
   );
 };

@@ -25,18 +25,16 @@ const Create = () => {
       .catch((err) => console.log(err));
   }
   return (
-    <div className="container-fluid py-5 vh-100 bg-light">
+    <div className="container-fluid p-5 mt-5 vh-100 bg-light">
       <div className="row justify-content-center">
-        <div className="col-lg-6 col-md-8 col-sm-10">
-          <h3 className="text-center mb-4">Add Student</h3>
-          <div className="d-flex justify-content-end mb-3">
-            <Link to="/" className="btn btn-success">
-              Home
-            </Link>
-          </div>
+        <div className="col-lg-6 col-md-8 col-sm-10 d-flex flex-column align-items-center">
+          <h1 className="text-center m-4">Add Student</h1>
+          <Link to="/" className="btn btn-success mb-3">
+            Back
+          </Link>
           <form
             onSubmit={handleSubmit}
-            className="p-4 border rounded bg-white shadow-sm"
+            className="p-4 w-50 border rounded bg-white shadow-sm"
           >
             <div className="form-group mb-3">
               <label className="fw-bold" htmlFor="name">

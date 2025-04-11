@@ -54,14 +54,14 @@ app.post('/validate_user', (req, res) => {
 
   db.query(sql, [email], (err, result) => {
     if (err) return res.json({ message: "Server error" });
-    if (result.length === 0) return res.json({ message: "User not found" });
+    if (result.length === 0) return res.status(404).json({ message: "User not found!" });
 
     const hashedPassword = result[0].password;
     bcrypt.compare(password, hashedPassword, (err, isMatch) => {
       if (err) return res.json({ message: "Error comparing passwords" });
-      if (!isMatch) return res.json({ message: "Invalid credentials" });
+      if (!isMatch) return res.status(401).json({ message: "Wrong Password!" });
 
-      return res.json({ success: "Login successful", user: result[0] });
+      return res.json({ success: "Login successful!", user: result[0] });
     });
   });
 });

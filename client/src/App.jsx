@@ -9,6 +9,7 @@ import Booking from "./components/Booking";
 import NavBar from "./components/NavBar";
 import SignIn from "./components/SignIn";
 import SignUp from "./components/SignUp";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route path="/edit/:id" element={<Edit />}></Route>
           <Route path="/read/:id" element={<Read />}></Route>
         </Routes>
+        <Footer />
       </BrowserRouter>
     </div>
   );

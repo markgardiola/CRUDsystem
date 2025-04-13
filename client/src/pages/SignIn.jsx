@@ -25,12 +25,19 @@ const SignIn = () => {
     axios
       .post("http://localhost:5000/validate_user", values)
       .then((res) => {
-        alert(res.data.success);
-        navigate("/homepage");
-        console.log(res);
+        if (res.data.token && res.data.user) {
+          // Save JWT & username to localStorage
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("username", res.data.user.username);
+          localStorage.setItem("email", res.data.user.email);
+
+          alert(res.data.success);
+          navigate("/homepage");
+        } else {
+          alert("Invalid server response.");
+        }
       })
       .catch((err) => {
-        // Access the error response from the server
         if (err.response && err.response.data && err.response.data.message) {
           alert(err.response.data.message);
         } else {

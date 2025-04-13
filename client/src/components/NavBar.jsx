@@ -1,8 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/navBar.css";
+import { useLocation } from "react-router-dom"; // ⬅️ import useLocation
 
 const NavBar = () => {
+  const [username, setUsername] = useState(null);
+  const location = useLocation(); // ⬅️ this will help re-trigger on route change
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    setUsername(storedUsername);
+  }, [location]); // ⬅️ triggers useEffect on every route change
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    setUsername(null);
+    window.location.href = "/signIn";
+  };
+
+  const collapseNavbar = () => {
+    const navbar = document.getElementById("navbarSupportedContent");
+    if (navbar.classList.contains("show")) {
+      const bsCollapse = new window.bootstrap.Collapse(navbar, {
+        toggle: false,
+      });
+      bsCollapse.hide();
+    }
+  };
+
   return (
     <div>
       <nav className="navbar navbar-expand-lg fixed-top">
@@ -35,12 +61,12 @@ const NavBar = () => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0 text-center d-flex align-items-center">
               <li className="nav-item">
-                <Link to="/" className="nav-link">
+                <Link to="/" className="nav-link" onClick={collapseNavbar}>
                   Home
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/about" className="nav-link">
+                <Link to="/about" className="nav-link" onClick={collapseNavbar}>
                   About
                 </Link>
               </li>
@@ -68,11 +94,51 @@ const NavBar = () => {
               </li>
             </ul>
             <ul className="navbar-nav ms-auto text-center d-flex align-items-center">
-              <li>
-                <Link to="/signIn" className="btn btn-outline-success">
-                  sign in
-                </Link>
-              </li>
+              {username ? (
+                <li className="nav-item dropdown">
+                  <a
+                    className="nav-link dropdown-toggle text-capitalize"
+                    href="#"
+                    role="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Hi, {username}
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-end">
+                    <li>
+                      <Link
+                        to="/profile"
+                        className="dropdown-item text-capitalize"
+                        onClick={() => document.body.click()}
+                      >
+                        My Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        className="dropdown-item text-capitalize text-danger"
+                        onClick={() => {
+                          handleLogout();
+                          document.body.click();
+                        }}
+                      >
+                        Logout
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              ) : (
+                <li>
+                  <Link
+                    to="/signIn"
+                    className="btn btn-outline-success"
+                    onClick={() => document.body.click()}
+                  >
+                    sign in
+                  </Link>
+                </li>
+              )}
             </ul>
           </div>
         </div>

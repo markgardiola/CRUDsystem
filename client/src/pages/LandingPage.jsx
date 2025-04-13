@@ -32,7 +32,7 @@ function Home() {
     <div className="container-fluid mt-5 p-0 bg-transparent">
       <Carousel />
       <Search />
-      <h3>Students</h3>
+      {/* <h3>Students</h3>
       <div className="d-flex justify-content-end mb-3">
         <Link className="btn btn-success" to="/create">
           Add Student
@@ -82,7 +82,7 @@ function Home() {
             );
           })}
         </tbody>
-      </table>
+      </table> */}
     </div>
   );
 }

@@ -13,6 +13,34 @@ const Booking = () => {
           Booking Form
         </h1>
         <div className="col-md-6">
+          <label for="fullName" className="form-label">
+            Full Name
+          </label>
+          <input
+            type="text"
+            className="form-control"
+            id="fullName"
+            name="fullName"
+            placeholder="Full Name"
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
+          <label for="mobileNumber" className="form-label">
+            Mobile Phone Number
+          </label>
+          <input
+            type="tel"
+            className="form-control"
+            id="mobileNumber"
+            name="mobileNumber"
+            placeholder="+63 09..."
+            required
+          />
+        </div>
+
+        <div className="col-md-6">
           <label for="inputEmail4" className="form-label">
             Email
           </label>

@@ -1,6 +1,7 @@
 import React from "react";
 import Carousel2 from "./Carousel2";
 import "../styles/about.css";
+import Footer from "./Footer";
 
 const About = () => {
   return (
@@ -93,6 +94,7 @@ const About = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

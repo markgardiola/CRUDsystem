@@ -67,11 +67,12 @@ app.post('/register_user', (req, res) => {
 // login user
 
 app.post('/validate_user', (req, res) => {
-  const sql = 'SELECT * FROM user_details WHERE `email` = ?';
+  const sql = 'SELECT * FROM user_details WHERE email = ? AND role = ?';
   const email = req.body.email;
   const password = req.body.password;
+  const role = req.body.role; // this must come from the frontend
 
-  db.query(sql, [email], (err, result) => {
+  db.query(sql, [email, role], (err, result) => {
     if (err) return res.json({ message: "Server error" });
     if (result.length === 0) return res.status(404).json({ message: "User not found!" });
 
@@ -93,12 +94,14 @@ app.post('/validate_user', (req, res) => {
         user: {
           id: user.id,
           username: user.username,
-          email: user.email
+          email: user.email,
+          role: user.role
         }
       });
     });
   });
 });
+
 
 // Assuming you have a route to fetch user info
 app.get("/get_user_info", verifyToken, (req, res) => {

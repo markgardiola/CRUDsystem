@@ -110,7 +110,7 @@ const NavBar = () => {
                       <Link
                         to="/profile"
                         className="dropdown-item text-capitalize"
-                        onClick={() => document.body.click()}
+                        onClick={collapseNavbar}
                       >
                         My Profile
                       </Link>

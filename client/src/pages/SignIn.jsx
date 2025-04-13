@@ -22,17 +22,29 @@ const SignIn = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const role = values.email === "admin@alaehscape.com" ? "admin" : "user"; // Automatically assign role based on email (or other logic)
+
     axios
-      .post("http://localhost:5000/validate_user", values)
+      .post("http://localhost:5000/validate_user", {
+        email: values.email,
+        password: values.password,
+        role: role,
+      })
       .then((res) => {
         if (res.data.token && res.data.user) {
-          // Save JWT & username to localStorage
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("username", res.data.user.username);
           localStorage.setItem("email", res.data.user.email);
+          localStorage.setItem("role", res.data.user.role);
 
           alert(res.data.success);
-          navigate("/homepage");
+
+          // Redirect based on role
+          if (res.data.user.role === "admin") {
+            navigate("/adminDashboard"); // Admin Dashboard route
+          } else {
+            navigate("/homepage"); // Regular user homepage route
+          }
         } else {
           alert("Invalid server response.");
         }

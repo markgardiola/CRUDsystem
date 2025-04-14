@@ -5,6 +5,7 @@ import axios from "axios";
 const Profile = () => {
   const [user, setUser] = useState({
     username: "",
+    password: "",
     email: "",
     phone: "",
     address: "",
@@ -58,6 +59,7 @@ const Profile = () => {
     const updatedUser = {
       username: user.username,
       email: user.email,
+      password: user.password,
       phone: user.phone,
       address: user.address,
     };
@@ -71,6 +73,7 @@ const Profile = () => {
         // Update localStorage and state with new info
         localStorage.setItem("username", res.data.user.username);
         localStorage.setItem("email", res.data.user.email);
+        localStorage.setItem("password", res.data.user.password);
         localStorage.setItem("phone", res.data.user.phone);
         localStorage.setItem("address", res.data.user.address);
         setUser(res.data.user);
@@ -85,8 +88,8 @@ const Profile = () => {
 
   return (
     <div className="container mt-5 pt-5">
-      <h2 className="text-success">Profile Page</h2>
-      <div className="card p-4 mt-3 shadow-sm">
+      <h2 className="fs-2">Profile Page</h2>
+      <div className="card p-4 mt-4 shadow-lg">
         {isEditing ? (
           <form onSubmit={handleUpdate}>
             <div className="mb-3">
@@ -116,6 +119,18 @@ const Profile = () => {
               />
             </div>
             <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                name="password"
+                placeholder="**********"
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="mb-3">
               <label htmlFor="phone" className="form-label">
                 Mobile
               </label>
@@ -123,7 +138,7 @@ const Profile = () => {
                 type="text"
                 className="form-control"
                 name="phone"
-                value={user.phone || ""} // Allow empty if no mobile data
+                value={user.phone || ""}
                 onChange={handleInputChange}
               />
             </div>
@@ -134,33 +149,50 @@ const Profile = () => {
               <textarea
                 className="form-control"
                 name="address"
-                value={user.address || ""} // Allow empty if no address data
+                value={user.address || ""}
                 onChange={handleInputChange}
               />
             </div>
-            <button type="submit" className="btn btn-success">
-              Save Changes
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary ms-2"
-              onClick={() => setIsEditing(false)}
-            >
-              Cancel
-            </button>
+            <div className="d-flex justify-content-between">
+              <button type="submit" className="btn btn-success">
+                Save Changes
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </button>
+            </div>
           </form>
         ) : (
           <div>
-            <h4>👤 Username: {user.username}</h4>
-            <h5>📧 Email: {user.email}</h5>
-            <h5>📱 Mobile: {user.phone || "Not Available"}</h5>
-            <h5>🏠 Address: {user.address || "Not Available"}</h5>
-            <button
-              className="btn btn-success mt-3"
-              onClick={() => setIsEditing(true)}
-            >
-              Edit Profile
-            </button>
+            <h5 className="mb-3">
+              <span className="fw-bold">👤 Username:</span> {user.username}
+            </h5>
+            <h5 className="mb-3">
+              <span className="fw-bold">📧 Email:</span> {user.email}
+            </h5>
+            <h5 className="mb-3">
+              <span className="fw-bold">🔒 Password:</span> **********
+            </h5>
+            <h5 className="mb-3">
+              <span className="fw-bold">📱 Mobile:</span>{" "}
+              {user.phone || "Not Available"}
+            </h5>
+            <h5 className="mb-3">
+              <span className="fw-bold">🏠 Address:</span>{" "}
+              {user.address || "Not Available"}
+            </h5>
+            <div className="text-center">
+              <button
+                className="btn btn-success mt-3"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Profile
+              </button>
+            </div>
           </div>
         )}
       </div>

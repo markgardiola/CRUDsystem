@@ -1,0 +1,11 @@
+@media (max-width: 768px) {
+  .admin-main-content {
+    margin-left: 0 !important;
+  }
+
+  .admin-sidebar {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+}

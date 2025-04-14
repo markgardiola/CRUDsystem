@@ -16,7 +16,7 @@ const Create = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:5000/add_user", values)
+      .post("http://localhost:5000/api/auth/register", values)
       .then((res) => {
         alert(res.data.success);
         navigate("/");

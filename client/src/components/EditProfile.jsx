@@ -5,6 +5,7 @@ const EditProfile = ({ user, onUpdateSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
     username: user.username,
     email: user.email,
+    password: user.password,
     phone: user.phone || "",
     address: user.address || "",
   });
@@ -23,6 +24,7 @@ const EditProfile = ({ user, onUpdateSuccess, onCancel }) => {
       .then((res) => {
         localStorage.setItem("username", res.data.user.username);
         localStorage.setItem("email", res.data.user.email);
+        localStorage.setItem("password", res.data.user.password);
         onUpdateSuccess(res.data.user);
       })
       .catch((err) => {
@@ -53,6 +55,14 @@ const EditProfile = ({ user, onUpdateSuccess, onCancel }) => {
         required
       />
       <input
+        type="password"
+        className="form-control"
+        name="password"
+        value={formData.password}
+        onChange={handleInputChange}
+        placeholder="Enter new password"
+      />
+      <input
         type="text"
         name="phone"
         value={formData.phone}
@@ -70,12 +80,6 @@ const EditProfile = ({ user, onUpdateSuccess, onCancel }) => {
         className="form-control mb-3"
         required
       />
-      <button type="submit" className="btn btn-success me-2">
-        Update
-      </button>
-      <button type="button" className="btn btn-secondary" onClick={onCancel}>
-        Cancel
-      </button>
     </form>
   );
 };

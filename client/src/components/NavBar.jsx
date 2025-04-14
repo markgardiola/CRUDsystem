@@ -5,16 +5,20 @@ import { useLocation } from "react-router-dom"; // ⬅️ import useLocation
 
 const NavBar = () => {
   const [username, setUsername] = useState(null);
+  const [role, setRole] = useState(null);
   const location = useLocation(); // ⬅️ this will help re-trigger on route change
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
+    const storedRole = localStorage.getItem("role");
     setUsername(storedUsername);
+    setRole(storedRole);
   }, [location]); // ⬅️ triggers useEffect on every route change
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
+    localStorage.removeItem("role");
     setUsername(null);
     window.location.href = "/signIn";
   };
@@ -94,7 +98,7 @@ const NavBar = () => {
               </li>
             </ul>
             <ul className="navbar-nav ms-auto text-center d-flex align-items-center">
-              {username ? (
+              {username && role !== "admin" ? (
                 <li className="nav-item dropdown">
                   <a
                     className="nav-link dropdown-toggle text-capitalize"

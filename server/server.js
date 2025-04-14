@@ -38,17 +38,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-app.post("/add_user", (req, res) => {
-  const sql =
-    "INSERT INTO student_details (`name`,`email`,`age`,`gender`) VALUES (?, ?, ?, ?)";
-  const values = [req.body.name, req.body.email, req.body.age, req.body.gender];
-  db.query(sql, values, (err, result) => {
-    if (err)
-      return res.json({ message: "Something unexpected has occured" + err });
-    return res.json({ success: "Student added successfully" });
-  });
-});
-
 // register user
 
 app.post('/register_user', (req, res) => {
@@ -108,7 +97,7 @@ app.get("/get_user_info", verifyToken, (req, res) => {
   const userId = req.userId;
 
   // Query the database to get user info
-  const sql = "SELECT username, email, phone, address FROM user_details WHERE id = ?";
+  const sql = "SELECT username, email, password, phone, address FROM user_details WHERE id = ?";
   db.query(sql, [userId], (err, result) => {
     if (err) {
       return res.status(500).json({ message: "Database error." });
@@ -125,73 +114,59 @@ app.get("/get_user_info", verifyToken, (req, res) => {
 // Update user details
 
 app.post("/update_user", verifyToken, (req, res) => {
-  const { username, email, phone, address } = req.body; // Change 'mobile' to 'phone'
+  const { username, email, password, phone, address } = req.body;
+  const userId = req.userId;
 
   if (!username || !email) {
     return res.status(400).json({ message: "Username and email are required." });
   }
 
-  const userId = req.userId;
+  // If password is provided, hash it before updating
+  if (password && password.trim() !== "") {
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        return res.status(500).json({ message: "Error hashing password." });
+      }
 
-  const sql = "UPDATE user_details SET username = ?, email = ?, phone = ?, address = ? WHERE id = ?";
-  db.query(sql, [username, email, phone, address, userId], (err, result) => {
-    if (err) {
-      return res.status(500).json({ message: "Database error." });
-    }
+      const sql = "UPDATE user_details SET username = ?, email = ?, password = ?, phone = ?, address = ? WHERE id = ?";
+      db.query(sql, [username, email, hashedPassword, phone, address, userId], (err, result) => {
+        if (err) {
+          return res.status(500).json({ message: "Database error." });
+        }
 
-    return res.json({
-      success: "Profile updated successfully!",
-      user: { id: userId, username, email, phone, address },
+        return res.json({
+          success: "Profile updated successfully!",
+          user: {
+            id: userId,
+            username,
+            email,
+            phone,
+            address
+            // ✅ Don't send hashed password back
+          },
+        });
+      });
     });
-  });
-});
+  } else {
+    // Update everything except password
+    const sql = "UPDATE user_details SET username = ?, email = ?, phone = ?, address = ? WHERE id = ?";
+    db.query(sql, [username, email, phone, address, userId], (err, result) => {
+      if (err) {
+        return res.status(500).json({ message: "Database error." });
+      }
 
-
-
-app.get("/students", (req, res) => {
-  const sql = "SELECT * FROM student_details";
-  db.query(sql, (err, result) => {
-    if (err) res.json({ message: "Server error" });
-    return res.json(result);
-  });
-});
-
-app.get("/get_student/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "SELECT * FROM student_details WHERE `id`= ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) res.json({ message: "Server error" });
-    return res.json(result);
-  });
-});
-
-app.post("/edit_user/:id", (req, res) => {
-  const id = req.params.id;
-  const sql =
-    "UPDATE student_details SET `name`=?, `email`=?, `age`=?, `gender`=? WHERE id=?";
-  const values = [
-    req.body.name,
-    req.body.email,
-    req.body.age,
-    req.body.gender,
-    id,
-  ];
-  db.query(sql, values, (err, result) => {
-    if (err)
-      return res.json({ message: "Something unexpected has occured" + err });
-    return res.json({ success: "Student updated successfully" });
-  });
-});
-
-app.delete("/delete/:id", (req, res) => {
-  const id = req.params.id;
-  const sql = "DELETE FROM student_details WHERE id=?";
-  const values = [id];
-  db.query(sql, values, (err, result) => {
-    if (err)
-      return res.json({ message: "Something unexpected has occured" + err });
-    return res.json({ success: "Student deleted successfully" });
-  });
+      return res.json({
+        success: "Profile updated successfully!",
+        user: {
+          id: userId,
+          username,
+          email,
+          phone,
+          address
+        },
+      });
+    });
+  }
 });
 
 app.listen(port, () => {

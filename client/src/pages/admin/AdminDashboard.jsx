@@ -1,17 +1,16 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import AdminSideBar from "../../components/AdminSideBar";
 import AdminTopBar from "../../components/AdminTopBar";
 
 const AdminDashboard = () => {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
 
-  if (!token || role !== "admin") {
+  if (!token) {
     return <Navigate to="/signIn" replace />;
   }
   return (
-    <div className="d-flex">
+    <div className="d-flex bg-light vh-100">
       <AdminSideBar />
       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
         <AdminTopBar />

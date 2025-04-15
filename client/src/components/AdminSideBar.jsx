@@ -5,7 +5,7 @@ import logoImg from "/images/logo.png";
 
 const AdminSideBar = () => (
   <div
-    className="bg-success text-white d-flex flex-column position-fixed"
+    className="side-bar text-white d-flex flex-column position-fixed"
     style={{
       width: "250px",
       height: "100vh",
@@ -27,7 +27,7 @@ const AdminSideBar = () => (
         }}
       />
     </div>
-    <nav className="nav flex-column">
+    <nav className=" container-fluid nav flex-column">
       <NavLink
         to="/adminDashboard"
         end

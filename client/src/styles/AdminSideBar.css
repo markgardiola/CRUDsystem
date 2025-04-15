@@ -1,11 +1,8 @@
-@media (max-width: 768px) {
-  .admin-main-content {
-    margin-left: 0 !important;
-  }
+.side-bar {
+  background-color: #F3DFC9;
+}
 
-  .admin-sidebar {
-    position: static !important;
-    width: 100% !important;
-    height: auto !important;
-  }
+.nav-link {
+  border-bottom: 2px solid #fff;
+  
 }

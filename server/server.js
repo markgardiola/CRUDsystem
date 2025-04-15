@@ -53,44 +53,76 @@ app.post('/register_user', (req, res) => {
   });
 })
 
-// login user
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
 
-app.post('/validate_user', (req, res) => {
-  const sql = 'SELECT * FROM user_details WHERE email = ? AND role = ?';
-  const email = req.body.email;
-  const password = req.body.password;
-  const role = req.body.role; // this must come from the frontend
-
-  db.query(sql, [email, role], (err, result) => {
+  // First, check for the user in the user_details table
+  let sql = 'SELECT * FROM user_details WHERE email = ?';
+  db.query(sql, [email], (err, result) => {
     if (err) return res.json({ message: "Server error" });
-    if (result.length === 0) return res.status(404).json({ message: "User not found!" });
 
-    const user = result[0];
+    let user = result[0];
 
-    bcrypt.compare(password, user.password, (err, isMatch) => {
-      if (err) return res.json({ message: "Error comparing passwords" });
-      if (!isMatch) return res.status(401).json({ message: "Wrong Password!" });
+    // If no user found, check the admin table
+    if (!user) {
+      sql = 'SELECT * FROM admin WHERE email = ?';
+      db.query(sql, [email], (err, result) => {
+        if (err) return res.json({ message: "Server error" });
+        user = result[0];  // Admin data will be stored in 'user' variable
 
-      const token = jwt.sign(
-        { id: user.id, username: user.username, email: user.email },
-        JWT_SECRET_KEY,
-        { expiresIn: '1h' }
-      );
-
-      return res.json({
-        success: "Login successful!",
-        token,
-        user: {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          role: user.role
+        if (!user) {
+          return res.status(404).json({ message: "User or Admin not found!" });
         }
+
+        // Proceed with password comparison (same as below)
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) return res.json({ message: "Error comparing passwords" });
+          if (!isMatch) return res.status(401).json({ message: "Wrong Password!" });
+
+          const token = jwt.sign(
+            { id: user.id, username: user.username, email: user.email, role: user.role || 'admin' },
+            JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+          );
+
+          return res.json({
+            success: user.role === 'admin' ? "Login successful!" : "Login successful!",
+            token,
+            user: {
+              id: user.id,
+              username: user.username,
+              email: user.email,
+              role: user.role || 'user', // Set default to 'user'
+            }
+          });
+        });
       });
-    });
+    } else {
+      // Continue with user validation if found in user_details table
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+        if (err) return res.json({ message: "Error comparing passwords" });
+        if (!isMatch) return res.status(401).json({ message: "Wrong Password!" });
+
+        const token = jwt.sign(
+          { id: user.id, username: user.username, email: user.email, role: user.role || 'user' },
+          JWT_SECRET_KEY,
+          { expiresIn: '1h' }
+        );
+
+        return res.json({
+          success: "Login successful!",
+          token,
+          user: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role || 'user',
+          }
+        });
+      });
+    }
   });
 });
-
 
 // Assuming you have a route to fetch user info
 app.get("/get_user_info", verifyToken, (req, res) => {

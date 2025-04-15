@@ -1,18 +1,16 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { Link, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
 
 const AdminTopBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Assume admin is logged in by default
   const navigate = useNavigate(); // Initialize navigate hook
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("role");
-    sessionStorage.removeItem("authToken");
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("admin");
 
-    setIsLoggedIn(false);
-
-    window.location.href = "/signIn";
+    navigate("/adminSignIn");
   };
 
   return (
@@ -41,24 +39,21 @@ const AdminTopBar = () => {
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
               <button
-                className="btn btn-light dropdown-toggle"
+                className="btn btn-outline-success dropdown-toggle"
                 id="adminDropdown"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
                 Welcome, Admin
               </button>
-              <ul
-                className="dropdown-menu dropdown-menu-end"
-                aria-labelledby="adminDropdown"
-              >
+              <ul className="dropdown-menu dropdown-menu-end">
                 <li>
-                  <button
-                    className="dropdown-item text-danger"
-                    onClick={handleLogout} // Bind the logout function
+                  <Link
+                    className="dropdown-item text-capitalize text-danger"
+                    onClick={handleLogout}
                   >
                     Logout
-                  </button>
+                  </Link>
                 </li>
               </ul>
             </li>

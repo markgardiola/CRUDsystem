@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Profile = () => {
   const [user, setUser] = useState({
@@ -10,7 +11,7 @@ const Profile = () => {
     phone: "",
     address: "",
   });
-  const [isEditing, setIsEditing] = useState(false); // To toggle between view/edit mode
+  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,15 +20,13 @@ const Profile = () => {
     const email = localStorage.getItem("email");
 
     if (!token || !username || !email) {
-      navigate("/signIn"); // Redirect if not logged in or missing data
+      navigate("/signIn");
     } else {
-      // Assuming your backend sends user info including mobile and address
       axios
-        .get("http://localhost:5000/get_user_info", {
+        .get("http://localhost:5000/api/get_user_info", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then((res) => {
-          // Store user data from the database, including mobile and address
           const { username, email, phone, address } = res.data.user;
           setUser({
             username,
@@ -43,7 +42,6 @@ const Profile = () => {
     }
   }, [navigate]);
 
-  // Handle changes to the form fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUser({
@@ -52,37 +50,48 @@ const Profile = () => {
     });
   };
 
-  // Handle form submission for updating profile
   const handleUpdate = (e) => {
     e.preventDefault();
+
+    if (!user.username || !user.email) {
+      toast.error("Username and email are required.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user.email)) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    if (user.password && user.password.length < 6) {
+      toast.error("Password must be at least 6 characters.");
+      return;
+    }
 
     const updatedUser = {
       username: user.username,
       email: user.email,
-      password: user.password,
       phone: user.phone,
       address: user.address,
     };
 
-    // Send updated data to the backend
+    if (user.password && user.password.length >= 6) {
+      updatedUser.password = user.password;
+    }
+
     axios
-      .post("http://localhost:5000/update_user", updatedUser, {
+      .post("http://localhost:5000/api/update_user", updatedUser, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((res) => {
-        // Update localStorage and state with new info
-        localStorage.setItem("username", res.data.user.username);
-        localStorage.setItem("email", res.data.user.email);
-        localStorage.setItem("password", res.data.user.password);
-        localStorage.setItem("phone", res.data.user.phone);
-        localStorage.setItem("address", res.data.user.address);
-        setUser(res.data.user);
-        setIsEditing(false); // Switch back to view mode
-        alert("Profile updated successfully!");
+        toast.success(res.data.message || "Profile updated successfully!");
+        setIsEditing(false);
+        setUser((prev) => ({ ...prev, password: "" }));
       })
       .catch((err) => {
         console.error(err);
-        alert("Error updating profile!");
+        toast.error("Error updating profile!");
       });
   };
 

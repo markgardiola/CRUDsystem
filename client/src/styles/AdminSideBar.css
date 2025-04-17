@@ -2,7 +2,40 @@
   background-color: #F3DFC9;
 }
 
+.side-bar img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.side-bar p {
+  font-family: 'Merienda', sans-serif;
+  font-size: 23px;
+  font-weight: 400;
+  color: #198754;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+  cursor: default;
+}
+
 .nav-link {
-  border-bottom: 2px solid #fff;
-  
+  font-size: 18px;
+  font-weight: 300;
+  color: #198754;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  padding-left: 20px;
+  padding-right: 20px;
+  transition: 0.5s;
+}
+
+.nav-link:hover {
+  color: #333;
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
+  transition: 0.5s;
+}
+
+.nav-link.active {
+  color: #333;
 }

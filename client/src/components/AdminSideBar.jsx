@@ -15,51 +15,27 @@ const AdminSideBar = () => (
       zIndex: 1000,
     }}
   >
-    <div className="d-flex justify-content-center mb-4">
-      <img
-        src={logoImg}
-        className="img-fluid"
-        style={{
-          borderRadius: "50%",
-          width: "100px",
-          height: "100px",
-          objectFit: "cover",
-        }}
-      />
+    <div className="d-flex justify-content-center mb-3">
+      <img src={logoImg} className="img-fluid" />
+    </div>
+    <div className="text-center mb-2">
+      <p>Ala-Eh-scape</p>
     </div>
     <nav className=" container-fluid nav flex-column">
-      <NavLink
-        to="/adminDashboard"
-        end
-        className={({ isActive }) =>
-          `nav-link ${isActive ? "active fw-bold text-dark" : "text-white"}`
-        }
-      >
+      <NavLink to="/adminDashboard" end className="nav-link">
         Dashboard
       </NavLink>
-      <NavLink
-        to="/adminDashboard/users"
-        className={({ isActive }) =>
-          `nav-link ${isActive ? "active fw-bold text-dark" : "text-white"}`
-        }
-      >
+      <NavLink to="/adminDashboard/users" className="nav-link">
         User Management
       </NavLink>
-      <NavLink
-        to="/adminDashboard/resorts"
-        className={({ isActive }) =>
-          `nav-link ${isActive ? "active fw-bold text-dark" : "text-white"}`
-        }
-      >
+      <NavLink to="/adminDashboard/resorts" className="nav-link">
         Resort Listings
       </NavLink>
-      <NavLink
-        to="/adminDashboard/bookings"
-        className={({ isActive }) =>
-          `nav-link ${isActive ? "active fw-bold text-dark" : "text-white"}`
-        }
-      >
+      <NavLink to="/adminDashboard/bookings" className="nav-link">
         Booking Requests
+      </NavLink>
+      <NavLink to="/adminDashboard/feedbacks" className="nav-link">
+        Feedbacks
       </NavLink>
     </nav>
   </div>

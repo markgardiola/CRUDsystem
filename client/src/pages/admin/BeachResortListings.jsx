@@ -1,26 +1,71 @@
 import React from "react";
+import { Link } from "react-router-dom"; // assuming you're using react-router
+
+const resorts = [
+  {
+    id: 1,
+    name: "Cocoons Laiya Club Resort",
+    location: "San Juan, Batangas",
+    description: "A beautiful beach resort.",
+  },
+  {
+    id: 2,
+    name: "Acuatico Beach Resort",
+    location: "Laiya, Batangas",
+    description: "Luxury and relaxation by the sea.",
+  },
+  // Add more resorts here...
+];
 
 const BeachResortListings = () => {
   return (
     <div className="container">
-      <div className="mb-5">
-        <h2 className="mb-3">Beach Resort Listings</h2>
-        <button className="btn btn-success mb-3">Add New Resort</button>
-        <ul className="list-group">
-          {/* Map through resort listings */}
-          {/* Example listing */}
-          <li className="list-group-item p-4">
-            <h3>Cocoons Laiya Club Resort</h3>
-            <p>
-              <strong>Location:</strong> San Juan, Batangas
-            </p>
-            <p>
-              <strong>Description:</strong> A beautiful beach resort.
-            </p>
-            <button className="btn btn-sm btn-primary me-2">Edit</button>
-            <button className="btn btn-sm btn-danger">Delete</button>
-          </li>
-        </ul>
+      <h2 className="mb-4 ">Beach Resort Listings</h2>
+      <div className="mb-3 text-end">
+        <button className="btn btn-success">
+          <i class="bi bi-plus-circle pe-2"></i>Add New Resort
+        </button>
+      </div>
+
+      <div className="table-responsive">
+        <table className="table table-hover table-bordered align-middle">
+          <thead className="table-success">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Location</th>
+              <th>Description</th>
+              <th className="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {resorts.map((resort, index) => (
+              <tr key={resort.id}>
+                <td>{index + 1}</td>
+                <td>{resort.name}</td>
+                <td>{resort.location}</td>
+                <td>{resort.description}</td>
+                <td className="text-center">
+                  <Link
+                    to={`/adminDashboard/resorts/${resort.id}`}
+                    className="btn btn-sm btn-outline-success me-2"
+                  >
+                    View
+                  </Link>
+                  <Link
+                    to={`/adminDashboard/resorts/${resort.id}/edit`}
+                    className="btn btn-sm btn-outline-primary me-2"
+                  >
+                    Edit
+                  </Link>
+                  <button className="btn btn-sm btn-outline-danger">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

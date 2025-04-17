@@ -25,7 +25,7 @@ const SignIn = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:5000/login", {
+      .post("http://localhost:5000/api/login", {
         email: values.email,
         password: values.password,
       })
@@ -81,29 +81,34 @@ const SignIn = () => {
 
   return (
     <div>
-      <div className="container-fluid d-flex justify-content-center align-items-center w-75 vh-100">
+      <div className="container-fluid d-flex justify-content-center align-items-center w-100 vh-100">
         <div
-          className="row w-75 border-2 border-success rounded-4"
+          className="row w-75 py-4 w-md-75 border border-2 border-success rounded-4 m-2"
           style={{
-            backdropFilter: "blur(10px)",
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
             boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
-            border: "1px solid rgba(255, 255, 255, 0.3)",
           }}
         >
-          <div className="col-md-6 border-end border-2 border-success d-flex justify-content-center align-items-center p-3">
+          <div className="col-md-6 d-none d-md-flex justify-content-center align-items-center p-3 border-end border-2 border-success">
             <img
               src={formbg}
               alt="Form Background"
-              className="img-fluid border border-2 border-success rounded-3"
-              style={{ maxHeight: "500px" }}
+              className="img-fluid border border-2 border-success"
+              style={{
+                maxHeight: "500px",
+                borderTopLeftRadius: "10rem",
+                borderBottomRightRadius: "10rem",
+                borderTopRightRadius: "0",
+                borderBottomLeftRadius: "0",
+              }}
             />
           </div>
-          <div className="col-md-6 d-flex justify-content-center align-items-center p-5">
-            <form onSubmit={handleSubmit} className="w-100 py-5 my-5">
-              <h1 className="text-center mb-4 text-white">Sign In</h1>
+
+          <div className="col-12 col-md-6 d-flex justify-content-center align-items-center p-4">
+            <form onSubmit={handleSubmit} className="w-75" autoComplete="off">
+              <h1 className="text-center mb-4 text-success fw-bold">Sign In</h1>
+
               <div>
-                <label htmlFor="email" className="form-label text-white">
+                <label htmlFor="email" className="form-label text-success">
                   Email
                 </label>
                 <input
@@ -115,13 +120,13 @@ const SignIn = () => {
                   onChange={handleChange}
                   style={{
                     backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
                     border: "1px solid rgba(255, 255, 255, 0.3)",
                   }}
                 />
               </div>
+
               <div>
-                <label htmlFor="password" className="mt-3 text-white">
+                <label htmlFor="password" className="mt-3 text-success">
                   Password
                 </label>
                 <input
@@ -133,30 +138,24 @@ const SignIn = () => {
                   onChange={handleChange}
                   style={{
                     backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
                     border: "1px solid rgba(255, 255, 255, 0.3)",
                   }}
                 />
               </div>
+
               <div className="d-flex flex-column justify-content-center mt-4">
                 <button
-                  className="btn btn-primary"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.2)",
-                    color: "white",
-                    border: "1px solid rgba(255, 255, 255, 0.3)",
-                  }}
+                  className="btn btn-outline-success fw-bold"
+                  type="submit"
                 >
                   Sign In
                 </button>
-                <p className="mt-3 text-center text-white">
+
+                <p className="mt-3 text-center text-success">
                   Don't have an account yet?
                 </p>
-                <Link
-                  to="/signUp"
-                  className="nav-link text-primary text-center"
-                  style={{ color: "white" }}
-                >
+
+                <Link to="/signUp" className="text-center text-success">
                   Sign Up
                 </Link>
               </div>
@@ -164,6 +163,7 @@ const SignIn = () => {
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );

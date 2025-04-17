@@ -6,7 +6,7 @@ const ManageBooking = () => {
       <div>
         <h2 className="mb-3">Manage Bookings</h2>
         <table className="table table-bordered table-striped">
-          <thead className="thead-dark">
+          <thead className="table-success">
             <tr>
               <th>Booking ID</th>
               <th>User</th>
@@ -17,8 +17,6 @@ const ManageBooking = () => {
             </tr>
           </thead>
           <tbody>
-            {/* Map through bookings data and display rows */}
-            {/* Example row */}
             <tr>
               <td>101</td>
               <td>Jane Smith</td>

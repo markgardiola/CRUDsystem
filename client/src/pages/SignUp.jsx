@@ -24,7 +24,7 @@ const SignUp = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:5000/register_user", values)
+      .post("http://localhost:5000/api/register_user", values)
       .then((res) => {
         alert(res.data.success);
         navigate("/signIn");
@@ -37,24 +37,34 @@ const SignUp = () => {
     <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
       <form
         onSubmit={handleSubmit}
-        className="form-control p-5 rounded-3 shadow w-25"
+        className="border border-2 rounded-5 border-success p-5"
+        autoComplete="off"
+        style={{
+          boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)",
+        }}
       >
-        <h1 className="text-center">Sign Up</h1>
+        <h1 className="text-center mb-4 text-success fw-bold">Sign Up</h1>
+
         <div>
-          <label htmlFor="username" className="mt-3">
+          <label htmlFor="username" className="form-label text-success">
             Username
           </label>
           <input
-            type="text"
+            type="username"
             className="form-control"
             placeholder="Enter your username"
             required
             name="username"
             onChange={handleChange}
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
           />
         </div>
+
         <div>
-          <label htmlFor="email" className="mt-3">
+          <label htmlFor="email" className="form-label text-success">
             Email
           </label>
           <input
@@ -64,10 +74,15 @@ const SignUp = () => {
             required
             name="email"
             onChange={handleChange}
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
           />
         </div>
+
         <div>
-          <label htmlFor="password" className="mt-3">
+          <label htmlFor="password" className="mt-3 text-success">
             Password
           </label>
           <input
@@ -77,12 +92,23 @@ const SignUp = () => {
             required
             name="password"
             onChange={handleChange}
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              border: "1px solid rgba(255, 255, 255, 0.3)",
+            }}
           />
         </div>
+
         <div className="d-flex flex-column justify-content-center mt-4">
-          <button className="btn btn-primary">Sign Up</button>
-          <p className="mt-3 text-center">already have an account?</p>
-          <Link to="/signIn" className="nav-link text-primary text-center">
+          <button className="btn btn-outline-success fw-bold" type="submit">
+            Sign Up
+          </button>
+
+          <p className="mt-3 text-center text-success">
+            Already have an account?
+          </p>
+
+          <Link to="/signIn" className="text-center text-success">
             Sign In
           </Link>
         </div>

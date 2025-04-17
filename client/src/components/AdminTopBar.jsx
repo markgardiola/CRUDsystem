@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Import useNavigate for redirection
+import { Link, useNavigate } from "react-router-dom";
 
 const AdminTopBar = () => {
-  const navigate = useNavigate(); // Initialize navigate hook
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
-    localStorage.removeItem("admin");
+    localStorage.removeItem("role");
 
     navigate("/adminSignIn");
   };
@@ -18,7 +18,6 @@ const AdminTopBar = () => {
       <div className="container-fluid px-4">
         <span className="navbar-brand fw-bold">Admin Dashboard</span>
 
-        {/* Toggler for small screens */}
         <button
           className="navbar-toggler"
           type="button"
@@ -31,7 +30,6 @@ const AdminTopBar = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Collapsible content */}
         <div
           className="collapse navbar-collapse justify-content-end"
           id="adminNavbar"
@@ -48,12 +46,12 @@ const AdminTopBar = () => {
               </button>
               <ul className="dropdown-menu dropdown-menu-end">
                 <li>
-                  <Link
-                    className="dropdown-item text-capitalize text-danger"
+                  <button
+                    className="dropdown-item text-capitalize text-danger bg-light"
                     onClick={handleLogout}
                   >
                     Logout
-                  </Link>
+                  </button>
                 </li>
               </ul>
             </li>

@@ -9,7 +9,6 @@ const Bookings = () => {
       date: "2025-05-01",
       status: "Pending",
     },
-    // more data...
   ];
 
   const getStatusBadge = (status) => {

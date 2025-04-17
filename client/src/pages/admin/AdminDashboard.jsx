@@ -10,7 +10,10 @@ const AdminDashboard = () => {
     return <Navigate to="/signIn" replace />;
   }
   return (
-    <div className="d-flex bg-light vh-100">
+    <div
+      className="d-flex bg-light"
+      style={{ minHeight: "100vh", overflow: "auto" }}
+    >
       <AdminSideBar />
       <div className="flex-grow-1" style={{ marginLeft: "250px" }}>
         <AdminTopBar />

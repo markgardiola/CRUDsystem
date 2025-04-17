@@ -3,9 +3,9 @@ import React from "react";
 const UsersManagement = () => {
   return (
     <div className="container">
-      <h3>User Management</h3>
+      <h2>User Management</h2>
       <table className="table table-striped mt-3">
-        <thead className="table-dark">
+        <thead className="table-success">
           <tr>
             <th>#</th>
             <th>Full Name</th>

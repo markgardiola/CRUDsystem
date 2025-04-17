@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/navBar.css";
-import { useLocation } from "react-router-dom"; // ⬅️ import useLocation
+import { useLocation } from "react-router-dom";
 
 const NavBar = () => {
   const [username, setUsername] = useState(null);
-  const location = useLocation(); // ⬅️ this will help re-trigger on route change
+  const [role, setRole] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
+    const storedRole = localStorage.getItem("role");
+
     setUsername(storedUsername);
-  }, [location]); // ⬅️ triggers useEffect on every route change
+    setRole(storedRole);
+  }, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
-    localStorage.removeItem("user");
+    localStorage.removeItem("role");
 
     setUsername(null);
     window.location.href = "/signIn";
@@ -97,7 +101,7 @@ const NavBar = () => {
               </li>
             </ul>
             <ul className="navbar-nav ms-auto text-center d-flex align-items-center">
-              {username ? (
+              {username && role !== "admin" ? (
                 <li className="nav-item dropdown">
                   <button
                     className="btn btn-outline-success dropdown-toggle"

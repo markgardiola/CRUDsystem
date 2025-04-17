@@ -20,7 +20,7 @@ const AdminSignIn = () => {
     e.preventDefault();
 
     axios
-      .post("http://localhost:5000/login", values)
+      .post("http://localhost:5000/api/login", values)
       .then((res) => {
         if (res.data.token && res.data.user) {
           const { token, user } = res.data;
@@ -67,6 +67,7 @@ const AdminSignIn = () => {
       <form
         className="form-control p-5 mb-4 rounded-3 shadow w-25"
         onSubmit={handleSubmit}
+        autoComplete="off"
       >
         <h2 className="text-center">Admin Sign In</h2>
         <div>

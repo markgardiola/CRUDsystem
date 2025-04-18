@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const SignUp = () => {
   const [values, setValues] = useState({
@@ -26,7 +27,10 @@ const SignUp = () => {
     axios
       .post("http://localhost:5000/api/register_user", values)
       .then((res) => {
-        alert(res.data.success);
+        toast.success(res.data.success, {
+          position: "top-right",
+          autoClose: 3000,
+        });
         navigate("/signIn");
         console.log(res);
       })

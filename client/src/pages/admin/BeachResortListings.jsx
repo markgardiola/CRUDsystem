@@ -22,9 +22,11 @@ const BeachResortListings = () => {
     <div className="container">
       <h2 className="mb-4 ">Beach Resort Listings</h2>
       <div className="mb-3 text-end">
-        <button className="btn btn-success">
-          <i class="bi bi-plus-circle pe-2"></i>Add New Resort
-        </button>
+        <Link to="add">
+          <button className="btn btn-success">
+            <i className="bi bi-plus-circle pe-2"></i>Add New Resort
+          </button>
+        </Link>
       </div>
 
       <div className="table-responsive">
@@ -35,7 +37,7 @@ const BeachResortListings = () => {
               <th>Name</th>
               <th>Location</th>
               <th>Description</th>
-              <th className="text-center">Actions</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>

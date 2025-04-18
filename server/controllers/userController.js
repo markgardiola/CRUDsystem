@@ -37,3 +37,65 @@ exports.updateUser = (req, res) => {
     update();
   }
 };
+
+//admins
+
+exports.getAllUsers = (req, res) => {
+  const query = 'SELECT id, username, email, phone, address FROM user_details';
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching users:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    res.json(results);
+  });
+};
+
+exports.adminUpdateUser = (req, res) => {
+  const userId = req.params.id;
+  const { username, email, phone, address, password } = req.body;
+
+  let passwordHash = null;
+  if (password) {
+    passwordHash = bcrypt.hashSync(password, 10);
+  }
+
+  const sql = `
+    UPDATE user_details
+    SET username = ?, email = ?, phone = ?, address = ?, ${password ? "password = ?" : "password = password"}
+    WHERE id = ?
+  `;
+
+  const params = password ? [username, email, phone, address, passwordHash, userId] : [username, email, phone, address, userId];
+
+  db.query(sql, params, (err, result) => {
+    if (err) {
+      console.error("Error updating user:", err);
+      return res.status(500).json({ error: "Failed to update user" });
+    }
+
+    res.json({ success: true, message: "User updated successfully" });
+  });
+};
+
+
+exports.deleteUser = (req, res) => {
+  const userId = req.params.id;
+
+  const sql = "DELETE FROM user_details WHERE id = ?";
+  db.query(sql, [userId], (err, result) => {
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ message: "Failed to delete user" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ message: "User deleted successfully" });
+  });
+};
+
+

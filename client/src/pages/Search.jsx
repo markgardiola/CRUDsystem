@@ -4,7 +4,7 @@ import "../styles/search.css";
 const Search = () => {
   return (
     <div className="container mt-5">
-      <h2 className="text-center mb-5 fw-normal display-5 text-uppercase find-resort-title">
+      <h2 className="text-center mb-5 fw-light display-5 text-uppercase find-resort-title">
         Find Your Perfect Beach Resort
       </h2>
       <form action="filterResorts.php" method="GET" className="row g-3">

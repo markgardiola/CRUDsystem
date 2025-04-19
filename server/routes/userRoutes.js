@@ -9,6 +9,7 @@ router.post('/update_user', verifyToken, userController.updateUser);
 
 //admins only
 router.get('/users', userController.getAllUsers)
+router.get('/total_users', userController.getTotalUsers);
 router.put('/users/:id', userController.adminUpdateUser);
 router.delete('/users/:id', userController.deleteUser);
 

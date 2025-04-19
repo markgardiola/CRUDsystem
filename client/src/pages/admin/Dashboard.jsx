@@ -1,12 +1,45 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios"; // Ensure you have axios installed
 import { Link } from "react-router-dom";
 import "../../styles/dashboard.css";
 
 const Dashboard = () => {
-  const totalUsers = 120;
-  const totalResorts = 15;
-  const totalBookings = 45;
-  const totalFeedbacks = 27;
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalResorts, setTotalResorts] = useState(0); // Added state for total resorts
+  const totalBookings = 99; // Example static data
+  const totalFeedbacks = 99; // Example static data
+
+  // Fetch total users from backend
+  useEffect(() => {
+    const fetchTotalUsers = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/total_users"
+        );
+        setTotalUsers(response.data.totalUsers);
+      } catch (error) {
+        console.error("Error fetching total users:", error);
+      }
+    };
+
+    fetchTotalUsers();
+  }, []); // Empty dependency array ensures this only runs once on component mount
+
+  // Fetch total resorts from backend
+  useEffect(() => {
+    const fetchTotalResorts = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/total_resorts"
+        );
+        setTotalResorts(response.data.totalResorts);
+      } catch (error) {
+        console.error("Error fetching total resorts:", error);
+      }
+    };
+
+    fetchTotalResorts();
+  }, []); // Empty dependency array ensures this only runs once on component mount
 
   return (
     <div className="container">
@@ -30,7 +63,8 @@ const Dashboard = () => {
               <div className="card-body d-flex flex-column align-items-start">
                 <i className="bi bi-house-door-fill fs-2 mb-2"></i>
                 <h5 className="card-title">Beach Resorts</h5>
-                <p className="card-text fs-4">{totalResorts}</p>
+                <p className="card-text fs-4">{totalResorts}</p>{" "}
+                {/* Displaying total resorts */}
               </div>
             </div>
           </Link>

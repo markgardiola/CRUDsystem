@@ -115,7 +115,7 @@ const NavBar = () => {
                     <li>
                       <Link
                         to="/profile"
-                        className="dropdown-item text-capitalize"
+                        className="dropdown-item text-capitalize bg-light"
                         onClick={collapseNavbar}
                       >
                         My Profile
@@ -123,7 +123,7 @@ const NavBar = () => {
                     </li>
                     <li>
                       <Link
-                        className="dropdown-item text-capitalize text-danger"
+                        className="dropdown-item text-capitalize text-danger bg-light"
                         onClick={() => {
                           handleLogout();
                           document.body.click();

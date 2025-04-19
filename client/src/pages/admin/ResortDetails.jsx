@@ -1,52 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import cocoonsImg from "/images/cocoons.jpg";
-
-const mockResorts = [
-  {
-    id: 1,
-    name: "Cocoons Laiya Club Resort",
-    location: "San Juan, Batangas",
-    description: "A beautiful beach resort perfect for relaxation.",
-    amenities: ["Wi-Fi", "Pool", "Beachfront", "Free Parking", "Restaurant"],
-    pricing: [
-      { room: "Standard Room", price: "₱3,500 per night" },
-      { room: "Deluxe Room", price: "₱5,500 per night" },
-      { room: "Suite", price: "₱7,800 per night" },
-    ],
-    images: [cocoonsImg, cocoonsImg],
-  },
-  {
-    id: 2,
-    name: "Acuatico Beach Resort",
-    location: "Laiya, Batangas",
-    description: "Luxury and relaxation by the sea.",
-    amenities: ["Infinity Pool", "Spa", "Private Rooms", "Bar"],
-    pricing: [
-      { room: "Standard Room", price: "₱6,800 per night" },
-      { room: "Ocean View Room", price: "₱9,200 per night" },
-    ],
-    images: [cocoonsImg, cocoonsImg],
-  },
-];
+import axios from "axios";
 
 const ResortDetails = () => {
   const { id } = useParams();
-  const resort = mockResorts.find((r) => r.id === parseInt(id));
+  const [resort, setResort] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!resort) {
-    return (
-      <div className="container py-5">
-        <h3 className="text-danger">Resort not found.</h3>
-        <Link
-          to="/adminDashboard/resorts"
-          className="btn btn-outline-success mt-3"
-        >
-          Back to Listings
-        </Link>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const fetchResort = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/resorts/${id}`
+        );
+        setResort(response.data);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch resort details.");
+        setLoading(false);
+      }
+    };
+
+    fetchResort();
+  }, [id]);
+
+  if (loading) return <div className="container py-5">Loading...</div>;
+  if (error) return <div className="container py-5 text-danger">{error}</div>;
+  if (!resort) return <div className="container py-5">Resort not found.</div>;
 
   return (
     <div className="container pb-5">
@@ -63,71 +45,47 @@ const ResortDetails = () => {
       </p>
       <p className="fs-5 mb-4">{resort.description}</p>
 
-      {/* Carousel Component with Fixed Height */}
-      <div
-        id="resortCarousel"
-        className="carousel slide mb-4"
-        data-bs-ride="carousel"
-      >
-        <div className="carousel-inner">
-          {resort.images.map((img, index) => (
-            <div
-              className={`carousel-item ${index === 0 ? "active" : ""}`}
-              key={index}
-            >
-              <img
-                src={img}
-                alt={`resort-img-${index}`}
-                className="d-block w-100 img-fluid rounded-4 shadow-sm"
-                style={{ height: "480px", objectFit: "cover" }}
-              />
-            </div>
-          ))}
+      {resort.image && (
+        <div className="mb-4 w-75">
+          <img
+            src={`http://localhost:5000/uploads/${resort.image}`}
+            alt={resort.name}
+            className="img-fluid rounded-4 shadow-sm"
+            style={{ height: "480px", objectFit: "cover", width: "100%" }}
+          />
         </div>
-        {/* Carousel controls */}
-        <button
-          className="carousel-control-prev"
-          type="button"
-          data-bs-target="#resortCarousel"
-          data-bs-slide="prev"
-        >
-          <span
-            className="carousel-control-prev-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button
-          className="carousel-control-next"
-          type="button"
-          data-bs-target="#resortCarousel"
-          data-bs-slide="next"
-        >
-          <span
-            className="carousel-control-next-icon"
-            aria-hidden="true"
-          ></span>
-          <span className="visually-hidden">Next</span>
-        </button>
-      </div>
-
-      <h5 className="fw-semibold text-success">Amenities:</h5>
-      <ul className="list-group list-group-flush mb-4">
-        {resort.amenities.map((amenity, i) => (
-          <li className="list-group-item" key={i}>
-            ✅ {amenity}
-          </li>
-        ))}
-      </ul>
+      )}
 
       <h5 className="fw-semibold text-success">Room Options & Pricing:</h5>
-      <ul className="list-group list-group-flush mb-4">
-        {resort.pricing.map((room, i) => (
-          <li className="list-group-item" key={i}>
-            <strong>{room.room}:</strong> {room.price}
-          </li>
-        ))}
-      </ul>
+      {resort.rooms && resort.rooms.length > 0 ? (
+        <ul className="list-group list-group-flush mb-4 w-50">
+          {resort.rooms.map((room, i) => (
+            <li className="list-group-item" key={i}>
+              <strong>{room.name}:</strong> ₱{room.price}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-muted">No rooms listed.</p>
+      )}
+
+      <h5 className="fw-semibold text-success">Amenities:</h5>
+      {resort.amenities && resort.amenities.length > 0 ? (
+        <table className="table table-bordered w-50">
+          <tbody>
+            {resort.amenities.map((amenity, i) => (
+              <tr key={i}>
+                <td className="d-flex align-items-center gap-2">
+                  <i className="bi bi-check-circle-fill text-success"></i>
+                  {amenity}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="text-muted">No amenities listed.</p>
+      )}
     </div>
   );
 };

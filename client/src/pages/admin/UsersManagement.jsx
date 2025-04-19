@@ -48,7 +48,7 @@ const UsersManagement = () => {
   };
 
   const showDeleteConfirm = (onConfirm) => {
-    toast.info(
+    toast.warning(
       ({ closeToast }) => (
         <div className="text-center">
           <p>Are you sure you want to delete this user?</p>
@@ -64,7 +64,7 @@ const UsersManagement = () => {
             </button>
             <button
               className="btn btn-secondary btn-sm"
-              onClick={toast.dismiss}
+              onClick={() => toast.dismiss()}
             >
               Cancel
             </button>
@@ -238,7 +238,7 @@ const UsersManagement = () => {
                 >
                   Cancel
                 </button>
-                <button className="btn btn-primary" onClick={handleEditSubmit}>
+                <button className="btn btn-success" onClick={handleEditSubmit}>
                   Save Changes
                 </button>
 

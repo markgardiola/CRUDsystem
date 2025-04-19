@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AddResort = () => {
   const [name, setName] = useState("");
@@ -11,8 +12,16 @@ const AddResort = () => {
   const [roomName, setRoomName] = useState("");
   const [roomPrice, setRoomPrice] = useState("");
   const [error, setError] = useState("");
+  const [amenities, setAmenities] = useState([]);
+  const [amenityInput, setAmenityInput] = useState("");
 
   const navigate = useNavigate();
+
+  const handleAddAmenity = () => {
+    if (!amenityInput.trim()) return;
+    setAmenities([...amenities, amenityInput.trim()]);
+    setAmenityInput("");
+  };
 
   const handleAddRoom = () => {
     if (!roomName || !roomPrice) return;
@@ -30,10 +39,11 @@ const AddResort = () => {
       formData.append("location", location);
       formData.append("description", description);
       formData.append("image", image);
-      formData.append("rooms", JSON.stringify(rooms)); // Send as JSON string
+      formData.append("rooms", JSON.stringify(rooms));
+      formData.append("amenities", JSON.stringify(amenities));
 
       const response = await axios.post(
-        "http://localhost:5000/api/resorts",
+        "http://localhost:5000/api/add_resort",
         formData,
         {
           headers: {
@@ -41,7 +51,7 @@ const AddResort = () => {
           },
         }
       );
-
+      toast.success("Resort added successfully!");
       navigate("/adminDashboard/resorts");
     } catch (err) {
       console.error(err);
@@ -51,6 +61,12 @@ const AddResort = () => {
 
   return (
     <div className="container">
+      <Link
+        to="/adminDashboard/resorts"
+        className="btn btn-outline-success mb-4"
+      >
+        ← Back to Listings
+      </Link>
       <h2 className="mb-4">Add New Resort</h2>
       {error && <div className="alert alert-danger">{error}</div>}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -107,6 +123,35 @@ const AddResort = () => {
             onChange={(e) => setImage(e.target.files[0])}
             required
           />
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Add Amenities</label>
+          <div className="d-flex gap-2 mb-2">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Amenity (e.g. Pool, WiFi)"
+              value={amenityInput}
+              onChange={(e) => setAmenityInput(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleAddAmenity}
+            >
+              Add
+            </button>
+          </div>
+          {amenities.length > 0 && (
+            <ul className="list-group">
+              {amenities.map((amenity, index) => (
+                <li key={index} className="list-group-item">
+                  {amenity}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         <div className="mb-3">

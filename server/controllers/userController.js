@@ -1,6 +1,18 @@
 const db = require('../config/connectDB');
 const bcrypt = require('bcrypt');
 
+exports.getTotalUsers = (req, res) => {
+  const query = 'SELECT COUNT(*) AS totalUsers FROM user_details';
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Error fetching total users:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    res.json({ totalUsers: results[0].totalUsers });
+  });
+};
+
 exports.getUserInfo = (req, res) => {
   const sql = "SELECT username, email, phone, address FROM user_details WHERE id = ?";
   db.query(sql, [req.userId], (err, result) => {
@@ -97,5 +109,6 @@ exports.deleteUser = (req, res) => {
     res.json({ message: "User deleted successfully" });
   });
 };
+
 
 

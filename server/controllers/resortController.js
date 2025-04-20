@@ -1,5 +1,6 @@
 const db = require('../config/connectDB');
-const pool = require("../config/connectDB");
+const fs = require("fs");
+const path = require("path");
 
 exports.createResort = (req, res) => {
   const { name, location, description } = req.body;
@@ -108,7 +109,6 @@ exports.getResortById = (req, res) => {
   });
 };
 
-
 exports.deleteResort = async (req, res) => {
   const { id } = req.params;
 
@@ -127,5 +127,94 @@ exports.deleteResort = async (req, res) => {
 };
 
 exports.updateResort = async (req, res) => {
+  const { id } = req.params;
+  const { name, location, description } = req.body;
+  const image = req.file ? req.file.filename : null;
 
-}
+  let rooms = [];
+  let amenities = [];
+
+  try {
+    rooms = JSON.parse(req.body.rooms || "[]");
+    amenities = JSON.parse(req.body.amenities || "[]");
+  } catch (err) {
+    return res.status(400).json({ message: "Invalid JSON for rooms or amenities." });
+  }
+
+  if (!name || !location || !description || rooms.length === 0) {
+    return res.status(400).json({ message: "All required fields must be filled." });
+  }
+
+  const updateFields = image
+    ? [name, location, description, image, id]
+    : [name, location, description, id];
+
+  const updateQuery = image
+    ? `UPDATE resorts SET name = ?, location = ?, description = ?, image = ? WHERE id = ?`
+    : `UPDATE resorts SET name = ?, location = ?, description = ? WHERE id = ?`;
+
+  db.query(updateQuery, updateFields, (err) => {
+    if (err) {
+      console.error("Error updating resort:", err);
+      return res.status(500).json({ message: "Error updating resort." });
+    }
+
+    db.query(`DELETE FROM rooms WHERE resort_id = ?`, [id], (err2) => {
+      if (err2) {
+        console.error("Error deleting old rooms:", err2);
+        return res.status(500).json({ message: "Error updating rooms." });
+      }
+
+      const roomValues = rooms.map((room) => [id, room.name, room.price]);
+      db.query(
+        `INSERT INTO rooms (resort_id, name, price) VALUES ?`,
+        [roomValues],
+        (err3) => {
+          if (err3) {
+            console.error("Error inserting new rooms:", err3);
+            return res.status(500).json({ message: "Error inserting updated rooms." });
+          }
+
+          db.query(`DELETE FROM resort_amenities WHERE resort_id = ?`, [id], (err4) => {
+            if (err4) {
+              console.error("Error deleting old amenities:", err4);
+              return res.status(500).json({ message: "Error updating amenities." });
+            }
+
+            if (amenities.length > 0) {
+              const amenityValues = amenities.map((item) => [id, item]);
+              db.query(
+                `INSERT INTO resort_amenities (resort_id, amenity) VALUES ?`,
+                [amenityValues],
+                (err5) => {
+                  if (err5) {
+                    console.error("Error inserting new amenities:", err5);
+                    return res.status(500).json({ message: "Error inserting updated amenities." });
+                  }
+
+                  return res.status(200).json({ message: "Resort updated successfully!" });
+                }
+              );
+            } else {
+              return res.status(200).json({ message: "Resort updated successfully!" });
+            }
+          });
+        }
+      );
+    });
+  });
+};
+
+exports.getResortByLocation = (req, res) => {
+  const location = req.params.location;
+
+  const query = "SELECT * FROM resorts WHERE location = ?";
+  db.query(query, [location], (err, results) => {
+    if (err) {
+      console.error("Error fetching resorts by location:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.status(200).json(results);
+  });
+};

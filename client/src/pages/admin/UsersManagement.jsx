@@ -133,7 +133,7 @@ const UsersManagement = () => {
                   <td>{user.address}</td>
                   <td>
                     <button
-                      className="btn btn-sm btn-primary me-2"
+                      className="btn btn-sm btn-outline-primary me-2"
                       onClick={() => setEditingUser(user)}
                       data-bs-toggle="modal"
                       data-bs-target="#editModal"

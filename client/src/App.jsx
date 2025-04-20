@@ -32,6 +32,8 @@ import EditResort from "./pages/admin/EditResort";
 // Protected Route
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddResort from "./pages/admin/AddResort";
+import ViewDetails from "./pages/ViewDetails";
+import Payment from "./pages/Payment";
 
 const App = () => {
   return (
@@ -47,6 +49,7 @@ const App = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="about" element={<About />} />
             <Route path="booking" element={<Booking />} />
+            <Route path="payment" element={<Payment />} />
             <Route path="destinations" element={<Destinations />} />
             <Route path="destinations/calatagan" element={<Calatagan />} />
             <Route path="destinations/mabini" element={<Mabini />} />
@@ -55,6 +58,7 @@ const App = () => {
               path="destinations/san-juan-laiya"
               element={<SanJuanLaiya />}
             />
+            <Route path="viewDetails/:id" element={<ViewDetails />} />
           </Route>
           <Route
             path="adminDashboard"

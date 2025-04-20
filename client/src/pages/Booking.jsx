@@ -1,11 +1,12 @@
 import React from "react";
 import "../styles/booking.css";
+import { Link } from "react-router-dom";
 
 const Booking = () => {
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
+    <div className="container-fluid d-flex justify-content-center align-items-center mt-5 pt-5 w-75">
       <form
-        className="row border border-2 rounded-5 border-success m-5 p-5 g-3"
+        className="row border border-2 rounded-4 border-success m-5 p-5 g-3"
         method="post"
         action="booking.php"
       >
@@ -49,6 +50,7 @@ const Booking = () => {
             className="form-control"
             id="inputEmail4"
             name="email"
+            placeholder="username@gmail.com"
             required
           />
         </div>
@@ -158,25 +160,10 @@ const Booking = () => {
           </select>
         </div>
 
-        <div className="col-12">
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="gridCheck"
-              name="send_email_confirmation"
-              required
-            />
-            <label className="form-check-label" for="gridCheck">
-              Send me an email confirmation
-            </label>
-          </div>
-        </div>
-
         <div className="col-12 mt-5 d-flex justify-content-end">
-          <button type="submit" className="btn btn-success">
-            Submit
-          </button>
+          <Link to="/payment" type="submit" className="btn btn-success">
+            Proceed to payment
+          </Link>
         </div>
       </form>
     </div>

@@ -1,257 +1,260 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const EditResort = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // State for the form data, image, and amenities
-  const [formData, setFormData] = useState({
+  const [resortData, setResortData] = useState({
     name: "",
     location: "",
     description: "",
     rooms: [],
-    amenities: [], // Added state for amenities
+    amenities: [],
+    image: null,
+    existingImage: "",
   });
-  const [image, setImage] = useState(null);
 
-  // Fetch resort data on load
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchResort = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/resorts/${id}`
-        );
-        const resort = response.data;
-        setFormData({
-          name: resort.name,
-          location: resort.location,
-          description: resort.description,
-          rooms: resort.rooms,
-          amenities: resort.amenities, // Populate amenities
+        const res = await axios.get(`http://localhost:5000/api/resorts/${id}`);
+        const data = res.data;
+
+        setResortData({
+          name: data.name,
+          location: data.location,
+          description: data.description,
+          rooms: data.rooms || [],
+          amenities: data.amenities || [],
+          image: null,
+          existingImage: data.image,
         });
-      } catch (error) {
-        console.error("Failed to fetch resort data:", error);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to load resort details.");
+        setLoading(false);
       }
     };
+
     fetchResort();
   }, [id]);
 
-  // Handle form field changes
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setResortData({ ...resortData, [e.target.name]: e.target.value });
   };
 
-  // Handle changes in room information
   const handleRoomChange = (index, field, value) => {
-    const updatedRooms = [...formData.rooms];
+    const updatedRooms = [...resortData.rooms];
     updatedRooms[index][field] = value;
-    setFormData((prev) => ({ ...prev, rooms: updatedRooms }));
+    setResortData({ ...resortData, rooms: updatedRooms });
   };
 
-  // Handle changes in amenities
-  const handleAmenityChange = (index, checked) => {
-    const updatedAmenities = [...formData.amenities];
-    if (checked) {
-      updatedAmenities.push(index); // Add the amenity ID to the list
-    } else {
-      const amenityIndex = updatedAmenities.indexOf(index);
-      updatedAmenities.splice(amenityIndex, 1); // Remove the amenity ID
-    }
-    setFormData((prev) => ({ ...prev, amenities: updatedAmenities }));
+  const handleAmenityChange = (index, value) => {
+    const updatedAmenities = [...resortData.amenities];
+    updatedAmenities[index] = value;
+    setResortData({ ...resortData, amenities: updatedAmenities });
   };
 
-  // Add a new room
+  const handleImageChange = (e) => {
+    setResortData({ ...resortData, image: e.target.files[0] });
+  };
+
   const addRoom = () => {
-    setFormData((prev) => ({
-      ...prev,
-      rooms: [...prev.rooms, { type: "", price: "" }],
-    }));
+    setResortData({
+      ...resortData,
+      rooms: [...resortData.rooms, { name: "", price: "" }],
+    });
   };
 
-  // Remove a room
   const removeRoom = (index) => {
-    const updatedRooms = formData.rooms.filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, rooms: updatedRooms }));
+    const updatedRooms = [...resortData.rooms];
+    updatedRooms.splice(index, 1);
+    setResortData({ ...resortData, rooms: updatedRooms });
   };
 
-  // Handle form submission
+  const addAmenity = () => {
+    setResortData({ ...resortData, amenities: [...resortData.amenities, ""] });
+  };
+
+  const removeAmenity = (index) => {
+    const updatedAmenities = [...resortData.amenities];
+    updatedAmenities.splice(index, 1);
+    setResortData({ ...resortData, amenities: updatedAmenities });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const form = new FormData();
-    form.append("name", formData.name);
-    form.append("location", formData.location);
-    form.append("description", formData.description);
-    form.append("image", image);
-
-    // Append room data
-    formData.rooms.forEach((room, index) => {
-      form.append(`rooms[${index}][type]`, room.type);
-      form.append(`rooms[${index}][price]`, room.price);
-    });
-
-    // Append selected amenities
-    formData.amenities.forEach((amenityId) => {
-      form.append("amenities[]", amenityId); // Assuming amenity IDs are stored
-    });
-
     try {
-      await axios.put(`http://localhost:5000/api/resorts/${id}`, form);
+      const formData = new FormData();
+      formData.append("name", resortData.name);
+      formData.append("location", resortData.location);
+      formData.append("description", resortData.description);
+      formData.append("rooms", JSON.stringify(resortData.rooms));
+      formData.append("amenities", JSON.stringify(resortData.amenities));
+      if (resortData.image) {
+        formData.append("image", resortData.image);
+      }
+
+      await axios.put(`http://localhost:5000/api/resorts/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      toast.success("Resort updated successfully!");
       navigate("/adminDashboard/resorts");
     } catch (error) {
-      console.error("Failed to update resort:", error);
+      console.error(error);
+      toast.error("Failed to update resort.");
     }
   };
 
+  if (loading) return <div className="container py-5">Loading...</div>;
+
   return (
-    <div className="container py-4">
+    <div className="container pb-5">
       <Link
         to="/adminDashboard/resorts"
         className="btn btn-outline-success mb-4"
       >
         ← Back to Listings
       </Link>
+
       <h2 className="mb-4">Edit Resort</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        {/* Resort Name */}
         <div className="mb-3">
-          <label className="form-label">Resort Name</label>
+          <label>Name</label>
           <input
             type="text"
             name="name"
             className="form-control"
-            value={formData.name}
+            value={resortData.name}
             onChange={handleChange}
             required
           />
         </div>
 
-        {/* Resort Location */}
         <div className="mb-3">
-          <label className="form-label">Location</label>
+          <label>Location</label>
           <input
             type="text"
             name="location"
             className="form-control"
-            value={formData.location}
+            value={resortData.location}
             onChange={handleChange}
             required
           />
         </div>
 
-        {/* Resort Description */}
         <div className="mb-3">
-          <label className="form-label">Description</label>
+          <label>Description</label>
           <textarea
             name="description"
-            rows="3"
             className="form-control"
-            value={formData.description}
+            rows="4"
+            value={resortData.description}
             onChange={handleChange}
-            required
-          />
+          ></textarea>
         </div>
 
-        {/* Resort Image */}
         <div className="mb-3">
-          <label htmlFor="image" className="form-label">
-            Image
-          </label>
+          <label>Current Image</label>
+          {resortData.existingImage && (
+            <div className="mb-2">
+              <img
+                src={`http://localhost:5000/uploads/${resortData.existingImage}`}
+                alt="Current"
+                style={{ width: "200px", height: "130px", objectFit: "cover" }}
+                className="rounded shadow-sm"
+              />
+            </div>
+          )}
           <input
             type="file"
-            id="image"
+            name="image"
             className="form-control"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            onChange={handleImageChange}
           />
         </div>
 
         <hr />
-        <h5>Room Options</h5>
-        {formData.rooms.map((room, index) => (
-          <div className="row g-2 mb-2" key={index}>
-            <div className="col-md-5">
+        <h5>Room Options & Pricing</h5>
+        {resortData.rooms.map((room, i) => (
+          <div className="row mb-2" key={i}>
+            <div className="col">
               <input
                 type="text"
-                placeholder="Room Type"
                 className="form-control"
-                value={room.type}
-                onChange={(e) =>
-                  handleRoomChange(index, "type", e.target.value)
-                }
+                placeholder="Room name"
+                value={room.name}
+                onChange={(e) => handleRoomChange(i, "name", e.target.value)}
               />
             </div>
-            <div className="col-md-5">
+            <div className="col">
               <input
-                type="text"
-                placeholder="Price (e.g. ₱3,500)"
+                type="number"
                 className="form-control"
+                placeholder="Price"
                 value={room.price}
-                onChange={(e) =>
-                  handleRoomChange(index, "price", e.target.value)
-                }
+                onChange={(e) => handleRoomChange(i, "price", e.target.value)}
               />
             </div>
-            <div className="col-md-2">
+            <div className="col-auto">
               <button
                 type="button"
-                className="btn btn-outline-danger w-100"
-                onClick={() => removeRoom(index)}
+                className="btn btn-danger"
+                onClick={() => removeRoom(i)}
               >
-                Delete
+                Remove
               </button>
             </div>
           </div>
         ))}
+        <button
+          type="button"
+          className="btn btn-outline-primary mb-4"
+          onClick={addRoom}
+        >
+          Add Room
+        </button>
 
-        <div className="mb-3">
+        <hr />
+        <h5>Amenities</h5>
+        {resortData.amenities.map((amenity, i) => (
+          <div className="d-flex mb-2" key={i}>
+            <input
+              type="text"
+              className="form-control me-2"
+              value={amenity}
+              onChange={(e) => handleAmenityChange(i, e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={() => removeAmenity(i)}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <div className="d-flex justify-content-between mt-4">
           <button
             type="button"
             className="btn btn-outline-primary"
-            onClick={addRoom}
+            onClick={addAmenity}
           >
-            Add Room
+            Add Amenity
           </button>
-        </div>
-
-        {/* Amenities Section */}
-        <hr />
-        <h5>Amenities</h5>
-        <div className="row">
-          {formData.amenitiesList?.map((amenity, index) => (
-            <div key={amenity.id} className="col-md-6">
-              <div className="form-check">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  checked={formData.amenities.includes(amenity.id)}
-                  onChange={(e) =>
-                    handleAmenityChange(amenity.id, e.target.checked)
-                  }
-                />
-                <label className="form-check-label">{amenity.name}</label>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Save Changes Button */}
-        <div className="text-end">
           <button type="submit" className="btn btn-success">
-            Save Changes
+            Update Resort
           </button>
         </div>
       </form>
-
-      <Link
-        to="/adminDashboard/resorts"
-        className="btn btn-outline-secondary mt-3"
-      >
-        ← Back to Listings
-      </Link>
     </div>
   );
 };

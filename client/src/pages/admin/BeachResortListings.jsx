@@ -94,7 +94,7 @@ const BeachResortListings = () => {
             {resorts.map((resort, index) => (
               <tr key={resort.id}>
                 <td>{index + 1}</td>
-                <td>
+                <td className="d-flex justify-content-center">
                   <img
                     src={`http://localhost:5000/uploads/${resort.image}`}
                     alt={resort.name}
@@ -122,7 +122,7 @@ const BeachResortListings = () => {
                     Edit
                   </Link>
                   <button
-                    className="btn btn-sm btn-outline-danger"
+                    className="btn btn-sm btn-danger"
                     onClick={() => handleDeleteResort(resort.id)}
                   >
                     Delete

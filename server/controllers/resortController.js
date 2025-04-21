@@ -6,7 +6,7 @@ exports.createResort = (req, res) => {
   const { name, location, description } = req.body;
   const image = req.file ? req.file.filename : null;
   const rooms = JSON.parse(req.body.rooms);
-  const amenities = JSON.parse(req.body.amenities || "[]"); // New line
+  const amenities = JSON.parse(req.body.amenities || "[]");
 
   if (!name || !location || !description || !image || rooms.length === 0) {
     return res.status(400).json({ message: 'All fields are required.' });
@@ -21,7 +21,6 @@ exports.createResort = (req, res) => {
 
     const resortId = result.insertId;
 
-    // Insert rooms
     const roomQuery = 'INSERT INTO rooms (resort_id, name, price) VALUES ?';
     const roomValues = rooms.map(room => [resortId, room.name, room.price]);
 
@@ -31,7 +30,6 @@ exports.createResort = (req, res) => {
         return res.status(500).json({ message: 'Server error while inserting rooms.' });
       }
 
-      // Insert amenities if available
       if (amenities.length > 0) {
         const amenityQuery = 'INSERT INTO resort_amenities (resort_id, amenity) VALUES ?';
         const amenityValues = amenities.map(amenity => [resortId, amenity]);
@@ -207,14 +205,11 @@ exports.updateResort = async (req, res) => {
 
 exports.getResortByLocation = (req, res) => {
   const location = req.params.location;
+  const query = "SELECT * FROM resorts WHERE location = ? ORDER BY created_at DESC";
 
-  const query = "SELECT * FROM resorts WHERE location = ?";
   db.query(query, [location], (err, results) => {
-    if (err) {
-      console.error("Error fetching resorts by location:", err);
-      return res.status(500).json({ error: "Database error" });
-    }
-
-    res.status(200).json(results);
+    if (err) return res.status(500).json({ error: "Database error" });
+    res.json(results);
   });
+
 };

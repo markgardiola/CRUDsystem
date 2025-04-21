@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const SanJuanLaiya = () => {
@@ -13,17 +13,35 @@ const SanJuanLaiya = () => {
       .catch((error) => console.error("Error fetching resorts:", error));
   }, []);
 
+  const navigate = useNavigate();
+
   return (
     <div className="container mt-5 py-5">
+      <div className="mb-1">
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => navigate(-1)}
+        >
+          ← Back
+        </button>
+      </div>
       <h1
-        className="mb-5 text-center text-uppercase fw-light"
+        className="display-5 mb-4 text-center text-uppercase fw-light"
         style={{
-          letterSpacing: "8px",
+          letterSpacing: "15px",
           textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
         }}
       >
-        Resorts in Mabini, Laiya
+        Mabini, Batangas
       </h1>
+      <p
+        className="fs-4 mb-5 text-center text-capitalize fw-light"
+        style={{
+          letterSpacing: "5px",
+        }}
+      >
+        Diving Capital of the Philippines.
+      </p>
       <div className="row">
         {resorts.map((resort) => (
           <div className="col-12 mb-4" key={resort.id}>
@@ -58,14 +76,35 @@ const SanJuanLaiya = () => {
                         className="btn btn-success"
                         onClick={() => {
                           const token = localStorage.getItem("token");
-                          if (token) {
+                          const role = localStorage.getItem("role");
+
+                          if (token && role === "user") {
                             window.location.href = "/booking";
                           } else {
                             toast.warning(
-                              "Please log in to proceed with booking.",
+                              ({ closeToast }) => (
+                                <div>
+                                  <p className="mb-2 text-center">
+                                    Please log in to proceed with booking.
+                                  </p>
+                                  <div className="d-flex justify-content-center">
+                                    <button
+                                      className="btn btn-sm btn-success"
+                                      onClick={() => {
+                                        window.location.href = "/signIn";
+                                        closeToast();
+                                      }}
+                                    >
+                                      Go to Login
+                                    </button>
+                                  </div>
+                                </div>
+                              ),
                               {
                                 position: "top-center",
-                                autoClose: 2300,
+                                autoClose: 5000,
+                                closeOnClick: false,
+                                closeButton: true,
                               }
                             );
                           }

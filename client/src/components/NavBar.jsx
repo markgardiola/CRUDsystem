@@ -138,7 +138,7 @@ const NavBar = () => {
                 <li>
                   <Link
                     to="/signIn"
-                    className="btn btn-outline-success"
+                    className="btn btn-outline-success text-capitalize"
                     onClick={() => document.body.click()}
                   >
                     sign in

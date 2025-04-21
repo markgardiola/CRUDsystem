@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -8,6 +8,8 @@ const ViewDetails = () => {
   const [resort, setResort] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchResort = async () => {
@@ -34,6 +36,14 @@ const ViewDetails = () => {
   return (
     <div className="container mt-5 py-5 d-flex justify-content-center">
       <div className="border border-2 border-success rounded-4 p-4 w-75">
+        <div className="mb-4">
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => navigate(-1)}
+          >
+            ← Back
+          </button>
+        </div>
         <h2 className="fw-bold text-success">{resort.name}</h2>
         <p className="fs-5 text-muted mb-2">
           <strong>Location:</strong> {resort.location}
@@ -86,13 +96,37 @@ const ViewDetails = () => {
             className="btn btn-success"
             onClick={() => {
               const token = localStorage.getItem("token");
-              if (token) {
+              const role = localStorage.getItem("role");
+
+              if (token && role === "user") {
                 window.location.href = "/booking";
               } else {
-                toast.warning("Please log in to proceed with booking.", {
-                  position: "top-center",
-                  autoClose: 2300,
-                });
+                toast.warning(
+                  ({ closeToast }) => (
+                    <div>
+                      <p className="mb-2 text-center">
+                        Please log in to proceed with booking.
+                      </p>
+                      <div className="d-flex justify-content-center">
+                        <button
+                          className="btn btn-sm btn-success"
+                          onClick={() => {
+                            window.location.href = "/signIn";
+                            closeToast();
+                          }}
+                        >
+                          Go to Login
+                        </button>
+                      </div>
+                    </div>
+                  ),
+                  {
+                    position: "top-center",
+                    autoClose: 5000,
+                    closeOnClick: false,
+                    closeButton: true,
+                  }
+                );
               }
             }}
           >

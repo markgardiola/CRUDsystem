@@ -1,7 +1,7 @@
 import React from "react";
 import Carousel2 from "./Carousel2";
 import "../styles/about.css";
-import Footer from "./Footer";
+import Footer from "../components/Footer";
 
 const About = () => {
   return (

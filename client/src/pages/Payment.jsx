@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 
 const Payment = () => {
   const [receipt, setReceipt] = useState(null);
   const [preview, setPreview] = useState(null);
+
+  const navigate = useNavigate();
 
   const gcashNumber = "0917-123-4567";
   const QrCode = "../../public/images/QR_Code.png";
@@ -29,6 +32,14 @@ const Payment = () => {
   return (
     <div className="container d-flex justify-content-center align-items-center mt-3 min-vh-100 px-3">
       <Card className="shadow-lg rounded-4 p-4 p-md-5 w-75 w-md-75 w-lg-50">
+        <div className="mb-2">
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => navigate(-1)}
+          >
+            ← Back
+          </button>
+        </div>
         <h3 className="mb-3 text-center">GCash Payment</h3>
         <p className="text-center">
           <strong>Account Number:</strong> {gcashNumber}

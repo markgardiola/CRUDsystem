@@ -1,15 +1,20 @@
 import React from "react";
-import "../styles/booking.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Booking = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="container-fluid d-flex justify-content-center align-items-center mt-5 pt-5 w-75">
-      <form
-        className="row border border-2 rounded-4 border-success m-5 p-5 g-3"
-        method="post"
-        action="booking.php"
-      >
+      <form className="row border border-2 rounded-4 border-success m-5 p-5 pt-4 g-3">
+        <div className="mb-2">
+          <button
+            className="btn btn-outline-secondary"
+            onClick={() => navigate(-1)}
+          >
+            ← Back
+          </button>
+        </div>
         <h1 className="mt-0 mb-4 text-center text-uppercase fw-light">
           Booking Form
         </h1>
@@ -79,7 +84,6 @@ const Booking = () => {
             id="adultCount"
             name="adultCount"
             min="0"
-            value="0"
             required
           />
         </div>
@@ -94,7 +98,6 @@ const Booking = () => {
             id="childCount"
             name="childCount"
             min="0"
-            value="0"
             required
           />
         </div>
@@ -161,7 +164,7 @@ const Booking = () => {
         </div>
 
         <div className="col-12 mt-5 d-flex justify-content-end">
-          <Link to="/payment" type="submit" className="btn btn-success">
+          <Link to="/payment" className="btn btn-success">
             Proceed to payment
           </Link>
         </div>

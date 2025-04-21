@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import formbg from "/images/form-bg.jpg";
-import Footer from "./Footer";
 import { toast } from "react-toastify";
+import Footer from "../components/Footer";
 
 const SignIn = () => {
   const [values, setValues] = useState({

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Card, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Payment = () => {
   const [receipt, setReceipt] = useState(null);
@@ -18,20 +19,41 @@ const Payment = () => {
     setPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!receipt) {
-      alert("Please upload a receipt.");
+      toast.error("Please upload a receipt.");
       return;
     }
 
-    toast.success("Receipt uploaded successfully!");
+    try {
+      const token = localStorage.getItem("token");
+      const bookingId = localStorage.getItem("bookingId");
+
+      const formData = new FormData();
+      formData.append("receipt", receipt);
+      formData.append("bookingId", bookingId);
+
+      await axios.post("http://localhost:5000/api/upload_receipt", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      toast.success("Receipt uploaded successfully!");
+      localStorage.removeItem("bookingId");
+      navigate("/");
+    } catch (error) {
+      console.error("Upload failed:", error);
+      toast.error("Failed to upload receipt. Try again.");
+    }
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center mt-3 min-vh-100 px-3">
-      <Card className="shadow-lg rounded-4 p-4 p-md-5 w-75 w-md-75 w-lg-50">
+    <div className="container d-flex justify-content-center align-items-center mt-5 px-3">
+      <Card className="shadow-lg my-5 rounded-4 p-4 p-md-5 w-75 w-md-75 w-lg-50">
         <div className="mb-2">
           <button
             className="btn btn-outline-secondary"

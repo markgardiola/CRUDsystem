@@ -79,7 +79,7 @@ const SanJuanLaiya = () => {
                           const role = localStorage.getItem("role");
 
                           if (token && role === "user") {
-                            window.location.href = "/booking";
+                            window.location.href = `/booking/${resort.id}`;
                           } else {
                             toast.warning(
                               ({ closeToast }) => (

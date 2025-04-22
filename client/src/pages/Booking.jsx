@@ -1,13 +1,105 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Booking = () => {
+  const { resortId } = useParams();
   const navigate = useNavigate();
+  const [resort, setResort] = useState(null);
+  const [form, setForm] = useState({
+    fullName: "",
+    email: "",
+    mobile: "",
+    address: "",
+    checkIn: "",
+    checkOut: "",
+    adults: 1,
+    children: 0,
+    selectedRoom: "",
+  });
+
+  useEffect(() => {
+    axios
+      .get(`http://localhost:5000/api/resorts/${resortId}`)
+      .then((response) => setResort(response.data))
+      .catch((error) => console.error("Error fetching resort details:", error));
+
+    const email = localStorage.getItem("email");
+    const token = localStorage.getItem("token");
+
+    if (email) {
+      setForm((prevForm) => ({ ...prevForm, email }));
+
+      axios
+        .get("http://localhost:5000/api/get_user_info", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          const { username, phone, address } = res.data.user;
+          setForm((prevForm) => ({
+            ...prevForm,
+            fullName: username || "",
+            mobile: phone || "",
+            address: address || "",
+          }));
+        })
+        .catch((err) =>
+          console.error("Error fetching user info from DB:", err)
+        );
+    }
+  }, [resortId]);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleBooking = (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+
+    axios
+      .post(
+        "http://localhost:5000/api/book",
+        {
+          resortId: resort.id,
+          fullName: form.fullName,
+          email: form.email,
+          mobile: form.mobile,
+          address: form.address,
+          checkIn: form.checkIn,
+          checkOut: form.checkOut,
+          adults: form.adults,
+          children: form.children,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // needed for req.userId
+          },
+        }
+      )
+      .then((res) => {
+        const bookingId = res.data.bookingId;
+        localStorage.setItem("bookingId", bookingId); // ✅ Store booking ID
+
+        toast.success("Booking request submitted!");
+        navigate("/payment");
+      })
+      .catch((err) => {
+        console.error("Booking failed:", err);
+        toast.error("Something went wrong. Please try again.");
+      });
+  };
+
+  if (!resort) return <div>Loading...</div>;
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center mt-5 pt-5 w-75">
-      <form className="row border border-2 rounded-4 border-success m-5 p-5 pt-4 g-3">
-        <div className="mb-2">
+    <div className="container mt-5 mb-3 p-5">
+      <div className="p-4 border border-2 border-success rounded-4 shadow-sm">
+        <div className="mb-4">
           <button
             className="btn btn-outline-secondary"
             onClick={() => navigate(-1)}
@@ -15,160 +107,183 @@ const Booking = () => {
             ← Back
           </button>
         </div>
-        <h1 className="mt-0 mb-4 text-center text-uppercase fw-light">
-          Booking Form
-        </h1>
-        <div className="col-md-6">
-          <label for="fullName" className="form-label">
-            Full Name
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="fullName"
-            name="fullName"
-            placeholder="Full Name"
-            required
-          />
+        <h2 className="mb-4 text-center">{resort.name}</h2>
+
+        <div className="row mb-4 d-flex align-items-center">
+          <div className="col-lg-6 mb-3">
+            {resort.images?.length > 0 ? (
+              <div
+                id="carouselResort"
+                className="carousel slide"
+                data-bs-ride="carousel"
+              >
+                <div className="carousel-inner rounded">
+                  {resort.images.map((img, index) => (
+                    <div
+                      className={`carousel-item ${index === 0 ? "active" : ""}`}
+                      key={index}
+                    >
+                      <img
+                        src={`http://localhost:5000/uploads/${img}`}
+                        className="d-block w-100"
+                        alt="Resort"
+                        style={{ height: "300px", objectFit: "cover" }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <img
+                src={`http://localhost:5000/uploads/${resort.image}`}
+                className="img-fluid rounded"
+                alt="Resort"
+              />
+            )}
+          </div>
+
+          <div className="col-lg-6">
+            <h5 className="fw-semibold">Description</h5>
+            <p className="text-muted">{resort.description}</p>
+
+            <h5 className="fw-semibold">Amenities</h5>
+            <ul className="list-group list-group-flush">
+              {resort.amenities?.map((item, idx) => (
+                <li className="list-group-item" key={idx}>
+                  ✅ {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        <div className="col-md-6">
-          <label for="mobileNumber" className="form-label">
-            Mobile Phone Number
-          </label>
-          <input
-            type="tel"
-            className="form-control"
-            id="mobileNumber"
-            name="mobileNumber"
-            placeholder="+63 09..."
-            required
-          />
-        </div>
+        <form onSubmit={handleBooking} className="pt-3">
+          <h4 className="mb-3">Book Your Stay</h4>
 
-        <div className="col-md-6">
-          <label for="inputEmail4" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            className="form-control"
-            id="inputEmail4"
-            name="email"
-            placeholder="username@gmail.com"
-            required
-          />
-        </div>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Full Name</label>
+              <input
+                type="text"
+                className="form-control"
+                name="fullName"
+                value={form.fullName}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <div className="col-md-6">
-          <label for="inputAddress" className="form-label">
-            Address
-          </label>
-          <input
-            type="text"
-            className="form-control"
-            id="inputAddress"
-            name="address"
-            placeholder="1234 Main St"
-            required
-          />
-        </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Email Address</label>
+              <input
+                type="email"
+                className="form-control"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <div className="col-md-3 mb-3">
-          <label for="adultCount" className="form-label">
-            Number of Adults
-          </label>
-          <input
-            type="number"
-            className="form-control"
-            id="adultCount"
-            name="adultCount"
-            min="0"
-            required
-          />
-        </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Mobile Number</label>
+              <input
+                type="tel"
+                className="form-control"
+                name="mobile"
+                value={form.mobile}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-        <div className="col-md-3 mb-3">
-          <label for="childCount" className="form-label">
-            Number of Children
-          </label>
-          <input
-            type="number"
-            className="form-control"
-            id="childCount"
-            name="childCount"
-            min="0"
-            required
-          />
-        </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Address</label>
+              <input
+                type="text"
+                className="form-control"
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
-        <div className="col-md-3">
-          <label for="dateInput" className="form-label">
-            Check in date
-          </label>
-          <input
-            type="date"
-            className="form-control"
-            id="dateInput"
-            name="checkin_date"
-            required
-          />
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Select Room</label>
+            <select
+              className="form-select"
+              name="selectedRoom"
+              value={form.selectedRoom}
+              onChange={handleChange}
+              required
+            >
+              <option value="">-- Choose a room --</option>
+              {resort.rooms?.map((room, idx) => (
+                <option key={idx} value={room.id}>
+                  {room.name} - ₱{room.price}/night
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="col-md-3">
-          <label for="dateInput" className="form-label">
-            Check out date
-          </label>
-          <input
-            type="date"
-            className="form-control"
-            id="dateInput"
-            name="checkout_date"
-            required
-          />
-        </div>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Check-in Date</label>
+              <input
+                type="date"
+                className="form-control"
+                name="checkIn"
+                value={form.checkIn}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Check-out Date</label>
+              <input
+                type="date"
+                className="form-control"
+                name="checkOut"
+                value={form.checkOut}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
 
-        <div className="col-md-4">
-          <label for="service" className="form-label">
-            Service
-          </label>
-          <select id="service" className="form-select" name="service" required>
-            <option selected>Choose Service...</option>
-            <option value="staycation">Staycation</option>
-            <option value="adventure">Adventure</option>
-            <option value="camping">Camping</option>
-          </select>
-        </div>
+          <div className="row">
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Adults</label>
+              <input
+                type="number"
+                className="form-control"
+                name="adults"
+                value={form.adults}
+                min="1"
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-6 mb-3">
+              <label className="form-label">Children</label>
+              <input
+                type="number"
+                className="form-control"
+                name="children"
+                value={form.children}
+                min="0"
+                onChange={handleChange}
+              />
+            </div>
+          </div>
 
-        <div className="col-md-4">
-          <label for="destination" className="form-label">
-            Destination
-          </label>
-          <select
-            id="destination"
-            className="form-select"
-            name="destination"
-            required
-          >
-            <option selected>Choose Destination...</option>
-          </select>
-        </div>
-
-        <div className="col-md-4">
-          <label for="resort" className="form-label">
-            Resort Name
-          </label>
-          <select id="resort" className="form-select" name="resort" required>
-            <option selected>Choose Resort...</option>
-          </select>
-        </div>
-
-        <div className="col-12 mt-5 d-flex justify-content-end">
-          <Link to="/payment" className="btn btn-success">
-            Proceed to payment
-          </Link>
-        </div>
-      </form>
+          <button type="submit" className="btn btn-success w-100 mt-3">
+            Confirm Booking
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

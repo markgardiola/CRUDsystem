@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; // Ensure you have axios installed
+import axios from "axios";
 import { Link } from "react-router-dom";
 import "../../styles/dashboard.css";
 
 const Dashboard = () => {
   const [totalUsers, setTotalUsers] = useState(0);
-  const [totalResorts, setTotalResorts] = useState(0); // Added state for total resorts
-  const totalBookings = 99; // Example static data
-  const totalFeedbacks = 99; // Example static data
+  const [totalResorts, setTotalResorts] = useState(0);
+  const [totalBookings, setTotalBookings] = useState(0);
+  const totalFeedbacks = 99;
 
-  // Fetch total users from backend
   useEffect(() => {
     const fetchTotalUsers = async () => {
       try {
@@ -23,9 +22,8 @@ const Dashboard = () => {
     };
 
     fetchTotalUsers();
-  }, []); // Empty dependency array ensures this only runs once on component mount
+  }, []);
 
-  // Fetch total resorts from backend
   useEffect(() => {
     const fetchTotalResorts = async () => {
       try {
@@ -39,7 +37,22 @@ const Dashboard = () => {
     };
 
     fetchTotalResorts();
-  }, []); // Empty dependency array ensures this only runs once on component mount
+  }, []);
+
+  useEffect(() => {
+    const fetchTotalBookings = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/total_bookings"
+        );
+        setTotalBookings(response.data.totalBookings);
+      } catch (error) {
+        console.error("Error fetching total bookings:", error);
+      }
+    };
+
+    fetchTotalBookings();
+  }, []);
 
   return (
     <div className="container">
@@ -63,8 +76,7 @@ const Dashboard = () => {
               <div className="card-body d-flex flex-column align-items-start">
                 <i className="bi bi-house-door-fill fs-2 mb-2"></i>
                 <h5 className="card-title">Beach Resorts</h5>
-                <p className="card-text fs-4">{totalResorts}</p>{" "}
-                {/* Displaying total resorts */}
+                <p className="card-text fs-4">{totalResorts}</p>
               </div>
             </div>
           </Link>

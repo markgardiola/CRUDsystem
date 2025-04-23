@@ -2,12 +2,15 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 const UsersManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [editingUser, setEditingUser] = useState(null); // for modal
+  const [editingUser, setEditingUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
 
   useEffect(() => {
     fetchUsers();
@@ -38,8 +41,6 @@ const UsersManagement = () => {
       toast.success("User updated successfully!");
       setEditingUser(null);
       fetchUsers();
-
-      // Programmatically close the modal
       document.getElementById("modalCloseBtn").click();
     } catch (err) {
       console.error(err);
@@ -47,52 +48,22 @@ const UsersManagement = () => {
     }
   };
 
-  const showDeleteConfirm = (onConfirm) => {
-    toast.warning(
-      ({ closeToast }) => (
-        <div className="text-center">
-          <p>Are you sure you want to delete this user?</p>
-          <div className="d-flex justify-content-center gap-2 mt-2">
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => {
-                onConfirm();
-                toast.dismiss(); // close toast
-              }}
-            >
-              Yes
-            </button>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => toast.dismiss()}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
-        draggable: false,
-      }
-    );
+  const handleDeleteUser = async (userId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/users/${userId}`);
+      toast.success("User deleted successfully!");
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete user.");
+    }
   };
 
-  const handleDeleteUser = (userId) => {
-    showDeleteConfirm(async () => {
-      try {
-        await axios.delete(`http://localhost:5000/api/users/${userId}`);
-        toast.success("User deleted successfully!");
-        fetchUsers();
-      } catch (err) {
-        console.error(err);
-        toast.error("Failed to delete user.");
-      }
-    });
-  };
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
 
   return (
     <div className="container">
@@ -103,55 +74,114 @@ const UsersManagement = () => {
       ) : error ? (
         <p className="text-danger">{error}</p>
       ) : (
-        <table className="table table-striped mt-3">
-          <thead className="table-success">
-            <tr>
-              <th>#</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Password</th>
-              <th>Mobile No.</th>
-              <th>Address</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.length === 0 ? (
+        <>
+          <table className="table table-striped table-bordered table-hover mt-3">
+            <thead className="table-success">
               <tr>
-                <td colSpan="7" className="text-center">
-                  No users found.
-                </td>
+                <th>#</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Mobile No.</th>
+                <th>Address</th>
+                <th>Actions</th>
               </tr>
-            ) : (
-              users.map((user, index) => (
-                <tr key={user.id}>
-                  <td>{index + 1}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>**********</td>
-                  <td>{user.phone}</td>
-                  <td>{user.address}</td>
-                  <td>
-                    <button
-                      className="btn btn-sm btn-outline-primary me-2"
-                      onClick={() => setEditingUser(user)}
-                      data-bs-toggle="modal"
-                      data-bs-target="#editModal"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      Delete
-                    </button>
+            </thead>
+            <tbody>
+              {currentUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    No users found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                currentUsers.map((user, index) => (
+                  <tr key={user.id}>
+                    <td>{indexOfFirstUser + index + 1}</td>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>**********</td>
+                    <td>{user.phone}</td>
+                    <td>{user.address}</td>
+                    <td className="text-center">
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => setEditingUser(user)}
+                        data-bs-toggle="modal"
+                        data-bs-target="#editModal"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-sm btn-danger"
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Are you sure?",
+                            text: "This user will be permanently deleted.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#6c757d",
+                            confirmButtonText: "Yes, delete it!",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              handleDeleteUser(user.id);
+                            }
+                          });
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {/* Pagination */}
+          <nav className="mt-3">
+            <ul className="pagination justify-content-center">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                  Previous
+                </button>
+              </li>
+              {[...Array(totalPages)].map((_, index) => (
+                <li
+                  key={index}
+                  className={`page-item ${
+                    currentPage === index + 1 ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                </li>
+              ))}
+              <li
+                className={`page-item ${
+                  currentPage === totalPages ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </>
       )}
 
       {/* Edit Modal */}
@@ -197,17 +227,17 @@ const UsersManagement = () => {
                     value={editingUser.email}
                     onChange={handleEditChange}
                   />
-                  <div className="mb-3">
-                    <label>Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      name="password"
-                      value={editingUser.password || ""}
-                      placeholder="**********"
-                      onChange={handleEditChange}
-                    />
-                  </div>
+                </div>
+                <div className="mb-3">
+                  <label>Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    name="password"
+                    value={editingUser.password || ""}
+                    placeholder="**********"
+                    onChange={handleEditChange}
+                  />
                 </div>
                 <div className="mb-3">
                   <label>Mobile No.</label>

@@ -9,7 +9,6 @@ import About from "./pages/About";
 import Booking from "./pages/Booking";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
-import Home from "./pages/Home";
 import UserLayout from "./components/UserLayout";
 import Profile from "./pages/Profile";
 import Destinations from "./pages/Destinations";
@@ -34,6 +33,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AddResort from "./pages/admin/AddResort";
 import ViewDetails from "./pages/ViewDetails";
 import Payment from "./pages/Payment";
+import BookingDetails from "./pages/admin/BookingDetails";
 
 const App = () => {
   return (
@@ -45,7 +45,6 @@ const App = () => {
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
             <Route path="adminSignIn" element={<AdminSignIn />} />
-            <Route path="homepage" element={<Home />} />
             <Route path="profile" element={<Profile />} />
             <Route path="about" element={<About />} />
             <Route path="booking/:resortId" element={<Booking />} />
@@ -75,6 +74,10 @@ const App = () => {
             <Route path="resorts/:id" element={<ResortDetails />} />
             <Route path="resorts/:id/edit" element={<EditResort />} />
             <Route path="bookings" element={<ManageBooking />} />
+            <Route
+              path="bookingDetails/:bookingId"
+              element={<BookingDetails />}
+            />
             <Route path="feedbacks" element={<Feedbacks />} />
           </Route>
         </Routes>

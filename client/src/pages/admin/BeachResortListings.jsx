@@ -3,9 +3,12 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 const BeachResortListings = () => {
   const [resorts, setResorts] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const resortsPerPage = 6;
 
   const fetchResorts = async () => {
     try {
@@ -20,52 +23,22 @@ const BeachResortListings = () => {
     fetchResorts();
   }, []);
 
-  const showDeleteConfirm = (onConfirm) => {
-    toast.warning(
-      ({ closeToast }) => (
-        <div className="text-center">
-          <p>Are you sure you want to delete this resort?</p>
-          <div className="d-flex justify-content-center gap-2 mt-2">
-            <button
-              className="btn btn-danger btn-sm"
-              onClick={() => {
-                onConfirm();
-                toast.dismiss();
-              }}
-            >
-              Yes
-            </button>
-            <button
-              className="btn btn-secondary btn-sm"
-              onClick={() => toast.dismiss()}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      ),
-      {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
-        draggable: false,
-      }
-    );
+  const handleDeleteResort = async (resortId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/resorts/${resortId}`);
+      setResorts((prev) => prev.filter((resort) => resort.id !== resortId));
+      toast.success("Resort deleted successfully!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete resort.");
+    }
   };
 
-  const handleDeleteResort = (resortId) => {
-    showDeleteConfirm(async () => {
-      try {
-        await axios.delete(`http://localhost:5000/api/resorts/${resortId}`);
-        setResorts((prev) => prev.filter((resort) => resort.id !== resortId));
-        toast.success("Resort deleted successfully!");
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to delete resort.");
-      }
-    });
-  };
+  // Pagination logic
+  const indexOfLastResort = currentPage * resortsPerPage;
+  const indexOfFirstResort = indexOfLastResort - resortsPerPage;
+  const currentResorts = resorts.slice(indexOfFirstResort, indexOfLastResort);
+  const totalPages = Math.ceil(resorts.length / resortsPerPage);
 
   return (
     <div className="container">
@@ -79,7 +52,7 @@ const BeachResortListings = () => {
       </div>
 
       <div className="table-responsive">
-        <table className="table table-hover table-bordered align-middle">
+        <table className="table table-hover table-striped table-bordered align-middle">
           <thead className="table-success">
             <tr>
               <th>#</th>
@@ -91,48 +64,111 @@ const BeachResortListings = () => {
             </tr>
           </thead>
           <tbody>
-            {resorts.map((resort, index) => (
-              <tr key={resort.id}>
-                <td>{index + 1}</td>
-                <td className="d-flex justify-content-center">
-                  <img
-                    src={`http://localhost:5000/uploads/${resort.image}`}
-                    alt={resort.name}
-                    style={{
-                      width: "100px",
-                      height: "70px",
-                      objectFit: "cover",
-                    }}
-                  />
-                </td>
-                <td>{resort.name}</td>
-                <td>{resort.location}</td>
-                <td>{resort.description}</td>
-                <td className="text-center">
-                  <Link
-                    to={`/adminDashboard/resorts/${resort.id}`}
-                    className="btn btn-sm btn-outline-success me-2"
-                  >
-                    View
-                  </Link>
-                  <Link
-                    to={`/adminDashboard/resorts/${resort.id}/edit`}
-                    className="btn btn-sm btn-outline-primary me-2"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    onClick={() => handleDeleteResort(resort.id)}
-                  >
-                    Delete
-                  </button>
+            {currentResorts.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="text-center">
+                  No resorts found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentResorts.map((resort, index) => (
+                <tr key={resort.id}>
+                  <td>{indexOfFirstResort + index + 1}</td>
+                  <td className="d-flex justify-content-center">
+                    <img
+                      src={`http://localhost:5000/uploads/${resort.image}`}
+                      alt={resort.name}
+                      style={{
+                        width: "100px",
+                        height: "70px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </td>
+                  <td>{resort.name}</td>
+                  <td>{resort.location}</td>
+                  <td>{resort.description}</td>
+                  <td className="text-center">
+                    <Link
+                      to={`/adminDashboard/resorts/${resort.id}`}
+                      className="btn btn-sm btn-outline-success me-2"
+                    >
+                      View
+                    </Link>
+                    <Link
+                      to={`/adminDashboard/resorts/${resort.id}/edit`}
+                      className="btn btn-sm btn-outline-primary me-2"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Are you sure?",
+                          text: "This resort will be permanently deleted.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#d33",
+                          cancelButtonColor: "#6c757d",
+                          confirmButtonText: "Yes, delete it!",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            handleDeleteResort(resort.id);
+                          }
+                        });
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* Pagination */}
+      <nav className="mt-3">
+        <ul className="pagination justify-content-center">
+          <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Previous
+            </button>
+          </li>
+          {[...Array(totalPages)].map((_, index) => (
+            <li
+              key={index}
+              className={`page-item ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+            >
+              <button
+                className="page-link"
+                onClick={() => setCurrentPage(index + 1)}
+              >
+                {index + 1}
+              </button>
+            </li>
+          ))}
+          <li
+            className={`page-item ${
+              currentPage === totalPages ? "disabled" : ""
+            }`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };

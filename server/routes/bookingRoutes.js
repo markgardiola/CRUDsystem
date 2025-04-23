@@ -2,12 +2,11 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middlewares/verifyToken");
 const multer = require("multer");
-const path = require("path");
 const bookingController = require("../controllers/bookingController");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/receipts/"); // Make sure this folder exists
+    cb(null, "uploads/receipts/");
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + "-" + file.originalname;
@@ -21,7 +20,10 @@ module.exports = upload;
 
 router.post("/book", verifyToken, bookingController.submitBooking);
 router.get("/bookings", bookingController.getAllBookings);
+router.get('/total_bookings', bookingController.getTotalBookings);
 router.post("/upload_receipt", upload.single("receipt"), bookingController.uploadPaymentReceipt);
+router.get("/bookings/:id", verifyToken, bookingController.getBookingById);
+router.put("/bookings/:id/status", verifyToken, bookingController.updateBookingStatus);
 
 
 module.exports = router;

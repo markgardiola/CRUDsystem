@@ -48,11 +48,7 @@ const SignIn = () => {
             autoClose: 3000,
           });
 
-          if (user.role === "admin") {
-            navigate("/adminDashboard");
-          } else {
-            navigate("/");
-          }
+          navigate("/");
         } else {
           alert("Invalid server response.");
         }

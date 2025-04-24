@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 const ManageBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const bookingsPerPage = 10; // Change this to however many bookings you want per page
+  const bookingsPerPage = 5;
 
   const navigate = useNavigate();
 
@@ -180,7 +180,7 @@ const ManageBooking = () => {
         </table>
       </div>
 
-      {/* Pagination */}
+      {/* pagination */}
       <nav className="mt-3">
         <ul className="pagination justify-content-center">
           <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>

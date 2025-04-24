@@ -19,7 +19,7 @@ const upload = multer({ storage });
 module.exports = upload;
 
 router.post("/book", verifyToken, bookingController.submitBooking);
-router.get("/bookings", bookingController.getAllBookings);
+router.get("/bookings", verifyToken, bookingController.getAllBookings);
 router.get('/total_bookings', bookingController.getTotalBookings);
 router.post("/upload_receipt", upload.single("receipt"), bookingController.uploadPaymentReceipt);
 router.get("/bookings/:id", verifyToken, bookingController.getBookingById);

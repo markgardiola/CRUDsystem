@@ -1,4 +1,7 @@
 const db = require("../config/connectDB");
+const sendEmail = require('../utils/sendEmail')
+const tplApproved = require('../templates/bookingApproved');
+const tplCancelled = require('../templates/bookingCancelled');
 
 exports.getTotalBookings = (req, res) => {
   const query = 'SELECT COUNT(*) AS totalBookings FROM bookings WHERE status = "Confirmed"';
@@ -135,57 +138,68 @@ exports.updateBookingStatus = async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
+  const allowed = ['Confirmed', 'Cancelled', 'Pending'];
+  if (!allowed.includes(status))
+    return res.status(400).json({ error: 'Invalid status' });
+
   try {
-    await db.query("UPDATE bookings SET status = ? WHERE id = ?", [
-      status,
-      id,
-    ]);
-    res.json({ message: "Booking status updated successfully" });
-  } catch (error) {
-    console.error("Error updating booking status:", error);
-    res.status(500).json({ error: "Failed to update booking status" });
+    const result = await db.query(
+      'UPDATE bookings SET status = ? WHERE id = ?',
+      [status, id]
+    );
+    if (result.affectedRows === 0)
+      return res.status(404).json({ error: 'Booking not found' });
+
+    const rows = await db.query(
+      `SELECT b.id,
+              DATE_FORMAT(b.check_in , '%M %e, %Y') AS checkIn,
+              DATE_FORMAT(b.check_out, '%M %e, %Y') AS checkOut,
+              b.adults,                    -- Separate count for adults
+              b.children,                  -- Separate count for children
+              b.full_name,
+              ud.email,
+              ud.username,
+              r.name AS resort
+         FROM bookings b
+         JOIN user_details ud ON ud.id = b.user_id
+         JOIN resorts r        ON r.id = b.resort_id
+        WHERE b.id = ?`,
+      [id]
+    );
+
+    const booking = rows[0];
+
+    let subject, html;
+    if (status === 'Confirmed') {
+      subject = 'Your booking is confirmed! 🎉';
+      html = tplApproved({
+        full_name: booking.full_name,
+        resort: booking.resort,
+        checkIn: booking.checkIn,
+        checkOut: booking.checkOut,
+        adults: booking.adults,
+        children: booking.children,
+      });
+    } else if (status === 'Cancelled') {
+      subject = 'Your booking has been cancelled';
+      html = tplCancelled({
+        full_name: booking.full_name,
+        resort: booking.resort,
+      });
+    }
+
+    if (html) {
+      sendEmail(booking.email, subject, html)
+        .then(() =>
+          console.log(`✅ ${status} email sent to ${booking.email}`)
+        )
+        .catch(err => console.error('❌ Email error:', err));
+    }
+
+    res.json({ message: `Booking ${status}` });
+  } catch (err) {
+    console.error('Error updating booking status:', err);
+    res.status(500).json({ error: 'Failed to update booking status' });
   }
 };
-
-// exports.updateBookingStatus = async (req, res) => {
-//   const { id } = req.params;
-//   const { status } = req.body;
-
-//   const updateQuery = 'UPDATE bookings SET status = ? WHERE id = ?';
-
-//   try {
-//     await db.query(updateQuery, [status, id]);
-
-//     if (status === "Confirmed") {
-//       const getUserInfoQuery = `
-//         SELECT ud.email,
-//          ud.username,
-//          r.name AS resort_name
-//         FROM   bookings      AS b
-//         JOIN   user_details  AS ud ON b.user_id   = ud.id
-//         JOIN   resorts        AS r  ON b.resort_id = r.id
-//         WHERE  b.id = ?
-//       `;
-
-//       const [result] = await db.query(getUserInfoQuery, [id]);
-//       if (result.length > 0) {
-//         const { email, username, resort_name } = result[0];
-//         const subject = "Your Booking is Confirmed!";
-//         const html = `
-//           <p>Hi ${username},</p>
-//           <p>Your payment for booking at <strong>${resort_name}</strong> has been <strong>confirmed</strong>!</p>
-//           <p>Thank you for using Ala-Eh-scape. We look forward to your stay!</p>
-//         `;
-
-//         await sendEmail(email, subject, html);
-//         console.log(`Confirmation email sent to ${email}`);
-//       }
-//     }
-
-//     res.json({ message: "Booking status updated successfully" });
-//   } catch (error) {
-//     console.error("Error updating booking status:", error);
-//     res.status(500).json({ error: "Failed to update booking status" });
-//   }
-// };
 

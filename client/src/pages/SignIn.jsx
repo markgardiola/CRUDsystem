@@ -34,6 +34,7 @@ const SignIn = () => {
           const { token, user } = res.data;
 
           localStorage.setItem("token", token);
+          localStorage.setItem("userId", user.id);
           localStorage.setItem("username", user.username);
           localStorage.setItem("email", user.email);
           localStorage.setItem("role", user.role);

@@ -34,6 +34,7 @@ import AddResort from "./pages/admin/AddResort";
 import ViewDetails from "./pages/ViewDetails";
 import Payment from "./pages/Payment";
 import BookingDetails from "./pages/admin/BookingDetails";
+import MyBooking from "./pages/MyBooking";
 
 const App = () => {
   return (
@@ -46,6 +47,7 @@ const App = () => {
             <Route path="signUp" element={<SignUp />} />
             <Route path="adminSignIn" element={<AdminSignIn />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="myBooking" element={<MyBooking />} />
             <Route path="about" element={<About />} />
             <Route path="booking/:resortId" element={<Booking />} />
             <Route path="payment" element={<Payment />} />

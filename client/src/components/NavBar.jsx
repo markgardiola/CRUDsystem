@@ -18,6 +18,7 @@ const NavBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("userId");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
     localStorage.removeItem("role");
@@ -119,6 +120,15 @@ const NavBar = () => {
                         onClick={collapseNavbar}
                       >
                         My Profile
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/myBooking"
+                        className="dropdown-item text-capitalize bg-light"
+                        onClick={collapseNavbar}
+                      >
+                        My Booking
                       </Link>
                     </li>
                     <li>

@@ -203,3 +203,31 @@ exports.updateBookingStatus = async (req, res) => {
   }
 };
 
+exports.getUserBooking = (req, res) => {
+  const userId = req.params.userId;
+
+  const query = `
+    SELECT 
+      b.id,
+      r.name AS resort_name,
+      b.check_in,
+      b.check_out,
+      b.adults,
+      b.children,
+      b.status,
+      b.created_at
+    FROM bookings b
+    JOIN resorts r ON b.resort_id = r.id
+    WHERE b.user_id = ?
+    ORDER BY b.created_at DESC
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching bookings:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    res.json(results);
+  });
+};
+

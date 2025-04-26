@@ -97,7 +97,7 @@ const Profile = () => {
 
   return (
     <div className="container mt-5 pt-5">
-      <h2 className="fs-2">Profile Page</h2>
+      <h3 className="mb-4">Profile Page</h3>
       <div className="card p-4 mt-4 shadow-lg">
         {isEditing ? (
           <form onSubmit={handleUpdate}>

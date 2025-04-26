@@ -24,6 +24,7 @@ router.get('/total_bookings', bookingController.getTotalBookings);
 router.post("/upload_receipt", upload.single("receipt"), bookingController.uploadPaymentReceipt);
 router.get("/bookings/:id", verifyToken, bookingController.getBookingById);
 router.put("/bookings/:id/status", verifyToken, bookingController.updateBookingStatus);
+router.get("/bookings/user/:userId", verifyToken, bookingController.getUserBooking);
 
 
 module.exports = router;

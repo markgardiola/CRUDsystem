@@ -25,6 +25,8 @@ router.post("/upload_receipt", upload.single("receipt"), bookingController.uploa
 router.get("/bookings/:id", verifyToken, bookingController.getBookingById);
 router.put("/bookings/:id/status", verifyToken, bookingController.updateBookingStatus);
 router.get("/bookings/user/:userId", verifyToken, bookingController.getUserBooking);
+router.delete('/bookings/:id', verifyToken, bookingController.deleteBooking);
+
 
 
 module.exports = router;

@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
+import { Navigate, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const MyBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const bookingsPerPage = 5;  // Number of bookings per page
+  const bookingsPerPage = 5;
+  const navigate = useNavigate();
 
   const userId = localStorage.getItem("userId");
   const token = localStorage.getItem("token");
@@ -20,14 +24,72 @@ const MyBooking = () => {
       .catch((err) => console.error("Error fetching bookings:", err));
   };
 
+  const deleteBooking = async (bookingId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This booking will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(
+            `http://localhost:5000/api/bookings/${bookingId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          fetchBookings();
+          toast.success(
+            "Deleted!",
+            "Your booking has been deleted.",
+            "success"
+          );
+        } catch (err) {
+          console.error("Error deleting booking:", err);
+          toast.error("Error!", "Failed to delete booking.", "error");
+        }
+      }
+    });
+  };
+
+  const updateBookingStatus = (bookingId, status) => {
+    axios
+      .put(
+        `http://localhost:5000/api/bookings/${bookingId}/status`,
+        { status },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then(() => {
+        toast.success(`Booking ${status}`);
+        fetchBookings();
+      })
+      .catch((err) => {
+        console.error("Error updating status:", err);
+        toast.error("Failed to update booking status");
+      });
+  };
+
   useEffect(() => {
     fetchBookings();
   }, [userId, token]);
 
-  // Pagination logic
   const indexOfLastBooking = currentPage * bookingsPerPage;
   const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
-  const currentBookings = bookings.slice(indexOfFirstBooking, indexOfLastBooking);
+  const currentBookings = bookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking
+  );
   const totalPages = Math.ceil(bookings.length / bookingsPerPage);
 
   return (
@@ -49,6 +111,7 @@ const MyBooking = () => {
                 <th>Children</th>
                 <th>Status</th>
                 <th>Date Booked</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -85,8 +148,47 @@ const MyBooking = () => {
                       {booking.status}
                     </span>
                   </td>
+                  <td>{new Date(booking.created_at).toLocaleDateString()}</td>
                   <td>
-                    {new Date(booking.created_at).toLocaleDateString()}
+                    {booking.status === "Pending" && (
+                      <button
+                        className="btn btn-sm btn-warning"
+                        onClick={() => {
+                          Swal.fire({
+                            title: "Cancel this booking?",
+                            text: "This will mark the booking as Cancelled.",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#6c757d",
+                            confirmButtonText: "Yes, cancel it!",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              updateBookingStatus(booking.id, "Cancelled"); // <-- fixed
+                            }
+                          });
+                        }}
+                        disabled={booking.status === "Cancelled"}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    {booking.status === "Confirmed" && (
+                      <button
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => navigate(`/viewMyBooking/${booking.id}`)}
+                      >
+                        View
+                      </button>
+                    )}
+                    {booking.status === "Cancelled" && (
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => deleteBooking(booking.id)}
+                      >
+                        Delete
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -109,7 +211,9 @@ const MyBooking = () => {
           {[...Array(totalPages)].map((_, index) => (
             <li
               key={index}
-              className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+              className={`page-item ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
             >
               <button
                 className="page-link"
@@ -120,7 +224,9 @@ const MyBooking = () => {
             </li>
           ))}
           <li
-            className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+            className={`page-item ${
+              currentPage === totalPages ? "disabled" : ""
+            }`}
           >
             <button
               className="page-link"

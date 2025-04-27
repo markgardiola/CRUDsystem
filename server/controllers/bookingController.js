@@ -231,3 +231,16 @@ exports.getUserBooking = (req, res) => {
   });
 };
 
+exports.deleteBooking = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('DELETE FROM bookings WHERE id = ?', [id]);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ error: 'Booking not found' });
+
+    res.json({ message: 'Booking deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting booking:', err);
+    res.status(500).json({ error: 'Failed to delete booking' });
+  }
+};

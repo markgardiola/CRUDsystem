@@ -130,7 +130,7 @@ const UsersManagement = () => {
                           });
                         }}
                       >
-                        Delete
+                        <i className="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>

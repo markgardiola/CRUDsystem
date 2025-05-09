@@ -113,7 +113,7 @@ const ViewMyBooking = () => {
                     ? "success"
                     : booking.status === "Cancelled"
                     ? "danger"
-                    : "warning"
+                    : "secondary"
                 }`}
               >
                 {booking.status}
@@ -163,7 +163,8 @@ const ViewMyBooking = () => {
               overflow: "auto",
             }}
           >
-            <div className="text-end">
+            <div className="d-flex justify-content-between align-items-center px-4 mb-3">
+              <h3>Proof of Payment</h3>
               <button
                 className="btn btn-danger btn-sm mb-3"
                 onClick={handleCloseModal}

@@ -119,7 +119,7 @@ const BeachResortListings = () => {
                         });
                       }}
                     >
-                      Delete
+                      <i className="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>

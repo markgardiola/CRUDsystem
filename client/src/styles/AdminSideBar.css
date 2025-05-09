@@ -1,5 +1,6 @@
 .side-bar {
   background-color: #F3DFC9;
+  transition: width 0.3s ease-in-out;
 }
 
 .side-bar img {
@@ -36,6 +37,28 @@
   transition: 0.5s;
 }
 
-.nav-link.active {
-  color: #333;
+.nav-link {
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.admin-sidebar .nav-link {
+  transition: padding 0.3s;
+}
+
+@media (min-width: 768px) {
+  .side-bar {
+    left: 0 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .side-bar {
+    width: 0.8in;
+  }
 }

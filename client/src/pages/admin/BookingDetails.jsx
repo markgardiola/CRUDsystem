@@ -151,7 +151,8 @@ const BookingDetails = () => {
                 overflow: "auto",
               }}
             >
-              <div className="text-end">
+              <div className="d-flex justify-content-between align-items-center px-1 mb-3">
+                <h3>Proof of Payment</h3>
                 <button
                   className="btn btn-sm btn-danger mb-2"
                   onClick={handleCloseModal}

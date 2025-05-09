@@ -55,7 +55,6 @@ exports.submitBooking = (req, res) => {
       return res.status(500).json({ message: "Database error" });
     }
 
-    // ✅ Return the inserted booking ID
     res.status(201).json({
       message: "Booking submitted successfully",
       bookingId: result.insertId

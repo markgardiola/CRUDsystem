@@ -149,46 +149,45 @@ const MyBooking = () => {
                     </span>
                   </td>
                   <td>{new Date(booking.created_at).toLocaleDateString()}</td>
-                  <td>
-                    {booking.status === "Pending" && (
-                      <button
-                        className="btn btn-sm btn-warning"
-                        onClick={() => {
-                          Swal.fire({
-                            title: "Cancel this booking?",
-                            text: "This will mark the booking as Cancelled.",
-                            icon: "warning",
-                            showCancelButton: true,
-                            confirmButtonColor: "#d33",
-                            cancelButtonColor: "#6c757d",
-                            confirmButtonText: "Yes, cancel it!",
-                          }).then((result) => {
-                            if (result.isConfirmed) {
-                              updateBookingStatus(booking.id, "Cancelled"); // <-- fixed
-                            }
-                          });
-                        }}
-                        disabled={booking.status === "Cancelled"}
-                      >
-                        Cancel
-                      </button>
-                    )}
-                    {booking.status === "Confirmed" && (
-                      <button
-                        className="btn btn-sm btn-outline-primary me-2"
-                        onClick={() => navigate(`/viewMyBooking/${booking.id}`)}
-                      >
-                        View
-                      </button>
-                    )}
-                    {booking.status === "Cancelled" && (
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => deleteBooking(booking.id)}
-                      >
-                        Delete
-                      </button>
-                    )}
+                  <td className="text-center">
+                    <button
+                      className="btn btn-sm btn-outline-primary me-2"
+                      onClick={() => navigate(`/viewMyBooking/${booking.id}`)}
+                    >
+                      View
+                    </button>
+
+                    <button
+                      className="btn btn-sm btn-warning me-2"
+                      onClick={() => {
+                        Swal.fire({
+                          title: "Cancel this booking?",
+                          text: "This will mark the booking as Cancelled.",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#d33",
+                          cancelButtonColor: "#6c757d",
+                          confirmButtonText: "Yes, cancel it!",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            updateBookingStatus(booking.id, "Cancelled");
+                          }
+                        });
+                      }}
+                      disabled={
+                        booking.status === "Cancelled" ||
+                        booking.status === "Confirmed"
+                      }
+                    >
+                      Cancel
+                    </button>
+
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => deleteBooking(booking.id)}
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
                   </td>
                 </tr>
               ))}

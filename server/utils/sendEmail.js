@@ -1,11 +1,12 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (to, subject, html) => {
+  require('dotenv').config();
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'alaehscape@gmail.com',
-      pass: 'znmg bpsk ixka pjaf',
+      pass: process.env.sendMailPass,
     },
   });
 

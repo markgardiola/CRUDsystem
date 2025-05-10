@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/connectDB');
-const JWT_SECRET_KEY = 'alaehscape2025';
+require('dotenv').config();
+const JWT_SECRET_KEY = process.env.JWT;
 
 exports.register = (req, res) => {
   const { username, email, password } = req.body;

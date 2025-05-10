@@ -84,7 +84,7 @@ const Dashboard = () => {
 
         <div className="col-md-3 col-sm-6">
           <Link to="/adminDashboard/bookings" className="text-decoration-none">
-            <div className="card dashboard-card text-white bg-info h-100">
+            <div className="card dashboard-card text-white bg-warning h-100">
               <div className="card-body d-flex flex-column align-items-start">
                 <i className="bi bi-calendar-check-fill fs-2 mb-2"></i>
                 <h5 className="card-title">Bookings</h5>
@@ -94,7 +94,7 @@ const Dashboard = () => {
           </Link>
         </div>
 
-        <div className="col-md-3 col-sm-6">
+        {/* <div className="col-md-3 col-sm-6">
           <Link to="/adminDashboard/feedbacks" className="text-decoration-none">
             <div className="card dashboard-card text-white bg-warning h-100">
               <div className="card-body d-flex flex-column align-items-start">
@@ -104,7 +104,7 @@ const Dashboard = () => {
               </div>
             </div>
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );

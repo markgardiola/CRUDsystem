@@ -28,7 +28,7 @@ const AdminSideBar = ({ isOpen, setIsOpen }) => {
         }}
       >
         <button
-          className="btn btn-outline-secondary mb-3"
+          className="btn btn-outline-success mb-3"
           style={{ zIndex: 1100 }}
           onClick={toggleSidebar}
         >
